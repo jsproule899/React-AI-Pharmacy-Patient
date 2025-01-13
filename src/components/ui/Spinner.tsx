@@ -6,10 +6,12 @@ function Spinner() {
 
     const { theme } = useTheme()
     return (
-        <div className="flex-grow flex flex-col justify-center items-center bg-stone-50 dark:bg-stone-900 h-svh">
+
+        <div className="flex flex-grow justify-center items-center bg-stone-50 dark:bg-stone-900">
             {theme == 'dark' ? <MoonLoader color={'red'} /> : <MoonLoader />}
             <p className="flex m-4 font-semibold  dark:text-white">Loading...</p>
         </div>
+
     )
 }
 

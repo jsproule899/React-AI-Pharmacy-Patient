@@ -1,7 +1,7 @@
 import React from 'react'
 import ScenarioForm from './ScenarioForm'
 
-function ScenarioAdd() {
+function ScenarioFormPage() {
     return (
         <div className="flex-grow flex-col bg-stone-50 dark:bg-stone-900">
             <h1 className="text-black dark:text-white text-2xl m-6 font-semibold ">Create a new Role-Play Scenario</h1>
@@ -13,4 +13,4 @@ function ScenarioAdd() {
     )
 }
 
-export default ScenarioAdd
+export default ScenarioFormPage
