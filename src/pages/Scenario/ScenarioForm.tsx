@@ -129,7 +129,7 @@ const formSchema = z.object({
     Voice: z.string(),
 }).superRefine(
     ({ Self, Other_Person }, refinementContext) => {
-        if (!Self) {
+        if (!Self && Other_Person) {
             const fieldsToCheck = [
                 "Other_Person.Name",
                 "Other_Person.Age",

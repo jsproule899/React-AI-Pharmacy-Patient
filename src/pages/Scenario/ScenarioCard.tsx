@@ -95,6 +95,29 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
     }
   }
 
+
+  const TimeAgo = ({ date }: { date: Date }) => {
+    // Get the formatted string for time difference
+    // Validate the date before using it
+    if (isNaN(date.getTime())) {
+      return <div>Invalid Date</div>; // Handle invalid date
+    }
+
+    const timeAgo = formatDistanceToNow(date, { addSuffix: true });
+    return <div>Added {timeAgo}</div>;
+  };
+
+  const HandleCopyEmbedLink = async (id: string | undefined) => {
+    let link = (document.getElementById(`link-${id}`) as HTMLInputElement)?.value
+    if (link) {
+      try {
+        await navigator.clipboard.writeText(link);
+      } catch (error: any) {
+        console.error(error.message);
+      }
+    }
+  }
+
   const handleDelete = async () => {
     try {
       await axios.delete(`${import.meta.env.VITE_API_BASEURL}/api/scenario/${scenario._id}`);
