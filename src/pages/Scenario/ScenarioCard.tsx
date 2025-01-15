@@ -25,7 +25,7 @@ import { Label } from '@/components/ui/label';
 import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
 import { Copy } from 'lucide-react';
-import { Link, useLocation } from 'react-router';
+import { Link } from 'react-router';
 
 
 
@@ -70,31 +70,6 @@ interface ScenarioProps {
 function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const location = useLocation();
-
-
-  const TimeAgo = ({ date }: { date: Date }) => {
-    // Get the formatted string for time difference
-    // Validate the date before using it
-    if (isNaN(date.getTime())) {
-      return <div>Invalid Date</div>; // Handle invalid date
-    }
-
-    const timeAgo = formatDistanceToNow(date, { addSuffix: true });
-    return <div>Added {timeAgo}</div>;
-  };
-
-  const HandleCopyEmbedLink = async (id: string | undefined) => {
-    let link = (document.getElementById(`link-${id}`) as HTMLInputElement)?.value
-    if (link) {
-      try {
-        await navigator.clipboard.writeText(link);
-      } catch (error: any) {
-        console.error(error.message);
-      }
-    }
-  }
-
 
   const TimeAgo = ({ date }: { date: Date }) => {
     // Get the formatted string for time difference
