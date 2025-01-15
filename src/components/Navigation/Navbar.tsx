@@ -61,6 +61,11 @@ const Navbar = () => {
                     }>
                         Transcripts
                     </NavLink>
+                    <NavLink to="/issues" className={({ isActive }) =>
+                        isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
+                    }>
+                        Issues
+                    </NavLink>
                 </nav>
 
                 <div className='flex justify-between self-center mx-3'>
@@ -79,31 +84,36 @@ const Navbar = () => {
 
             {/* Mobile Menu (Visible on small screens) */}
             <div
-                className={`md:hidden absolute left-0 top-20 w-full z-10 bg-stone-50 dark:bg-stone-900 shadow-md transition-all duration-300 ${isOpen ? "block" : "hidden"
+                className={`md:hidden absolute left-0 top-20 w-full z-20 bg-stone-50 dark:bg-stone-900 shadow-md transition-all duration-300 ${isOpen ? "block" : "hidden"
                     }`}
                  >
                 <div className='flex flex-wrap space-x-6 p-4 font-bold '>
-                    <nav className='flex space-x-6 p-4 font-bold '>
+                    <nav className='block md:flex space-x-6 p-4 font-bold '>
                         <NavLink to="/" end className={({ isActive }) =>
                             isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600"
-                        }>
+                        } onClick={toggleMenu}>
                             Home
                         </NavLink>
                         <NavLink to="/scenarios" className={({ isActive }) =>
                             isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
-                        }>
+                        } onClick={toggleMenu}>
                             Scenarios
                         </NavLink>
                         <NavLink to="/transcripts" className={({ isActive }) =>
                             isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
-                        }>
+                        } onClick={toggleMenu}>
                             Transcripts
                         </NavLink>
+                        <NavLink to="/issues" className={({ isActive }) =>
+                        isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
+                    }>
+                        Issues
+                    </NavLink>
                     </nav>
 
                     <div className='flex justify-between self-center mx-3'>
 
-                        <Link to='/login'>
+                        <Link to='/login' onClick={toggleMenu}>
                             <Button>
                                 Log in
                             </Button>

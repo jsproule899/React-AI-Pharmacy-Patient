@@ -1,0 +1,21 @@
+{
+    "Context": "Mr Richardson would like 'something good' to get rid of the flu.",
+    "Name": "Mr Richardson",
+    "Self": true,
+    "Other_Person": {
+    },
+    "Age": "62",
+    "Gender": "Male",
+    "Medicines": "a white tablet for blood pressure",
+    "AdditionalMeds": "Tried wifes benylin to help get a good night sleep",
+    "History": "Nasal congestion, sore head",
+    "Symptoms": "Sneezed and had a runny nose initially, now it is blocked. Also have a sore head. No cough or high temperature",
+    "Allergies": "penicillin",
+    "Time": "3 days",
+    "Outcome": "treat",
+    "AI": "Claude",
+    "Model": "claude-3-haiku-20240307",
+    "TTS": "Eleven Labs",
+    "Voice": "E8tAm6nkbW2yKYAJLVXH",
+    "Avatar": "male_01"
+}

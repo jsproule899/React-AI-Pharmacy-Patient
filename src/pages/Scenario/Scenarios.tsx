@@ -1,11 +1,11 @@
 
 import { Button } from '@/components/ui/button';
-import ScenarioCard from './ScenarioCard';
-import { FaPlus } from "react-icons/fa6";
-import { Link } from 'react-router';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import Spinner from '@/components/ui/Spinner';
+import { FaPlus } from "react-icons/fa6";
+import { Link } from 'react-router';
+import CardSkeleton from './CardSkeleton';
+import ScenarioCard from './ScenarioCard';
 
 
 let scenarios = [
@@ -72,7 +72,7 @@ useEffect(() => {
 }, []); // Empty dependency array to run once when the component mounts
     // Show loading spinner while fetching data
     if (isLoading) {
-        return <Spinner />;
+        return <CardSkeleton />;
     }
 
     return (
@@ -86,7 +86,7 @@ useEffect(() => {
                 </Link>
 
             </div>
-            <div className='flex justify-start  flex-wrap p m-4'>
+            <div className='flex justify-start  flex-wrap m-4'>
                 {scenarios.map((scenario, index) => {
                     return <ScenarioCard key={index} scenario={scenario} onScenarioDeleted={fetchScenarios}  />;
                 })}

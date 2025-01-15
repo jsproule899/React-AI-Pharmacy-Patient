@@ -1,0 +1,19 @@
+{
+    "Context": "Ruth asks for lozenges to treat a sore throat.",
+    "Name": "Ruth",
+    "Self": true,
+    "Age": "24",
+    "Gender": "Female",
+    "Medicines": "New (within the last month) tablets for her thyroid problem - 'carbimazole'.  Taken today's dose (4 x 5 mg tablets) already. Say that it states 'Morningside Healthcare' on the box too",
+    "AdditionalMeds": "Sucked some Tunes",
+    "History": "Sore throat.",
+    "Symptoms": "Chills and a few mouth ulcers.  ",
+    "Allergies": "None",
+    "Time": "A few days",
+    "Outcome": "refer",
+    "AI": "OpenAI",
+    "Model": "gpt-4o-mini",
+    "TTS": "Unreal Speech",
+    "Voice": "Zoe",
+    "Avatar": "Female_01"
+}

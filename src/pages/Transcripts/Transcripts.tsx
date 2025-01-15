@@ -1,4 +1,3 @@
-import React from 'react'
 import ChatLogDisplay from './ChatLogDisplay'
 
 function Transcripts() {

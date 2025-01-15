@@ -1,13 +1,12 @@
-import React, { useState } from 'react'
-import { FaCirclePlay, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+  CardTitle
+} from "@/components/ui/card";
+import { useState } from 'react';
+import { FaCirclePlay, FaLink, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 import {
   Dialog,
@@ -18,12 +17,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
-import { Link } from 'react-router'
-import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import axios from 'axios';
+import { formatDistanceToNow } from 'date-fns';
+import { Copy } from 'lucide-react';
+import { Link, useLocation } from 'react-router';
 
 
 
@@ -64,22 +66,34 @@ interface ScenarioProps {
   onScenarioDeleted: () => void; // Callback to re-fetch the scenarios
 }
 
-const TimeAgo = ({ date }: { date: Date }) => {
-  // Get the formatted string for time difference
-   // Validate the date before using it
-   if (isNaN(date.getTime())) {
-     return <div>Invalid Date</div>; // Handle invalid date
-   }
-
-  const timeAgo = formatDistanceToNow(date, { addSuffix: true }); 
-  return <div>Added {timeAgo}</div>;
-};
-
-
 
 function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const location = useLocation();
+
+
+  const TimeAgo = ({ date }: { date: Date }) => {
+    // Get the formatted string for time difference
+    // Validate the date before using it
+    if (isNaN(date.getTime())) {
+      return <div>Invalid Date</div>; // Handle invalid date
+    }
+
+    const timeAgo = formatDistanceToNow(date, { addSuffix: true });
+    return <div>Added {timeAgo}</div>;
+  };
+
+  const HandleCopyEmbedLink = async (id: string | undefined) => {
+    let link = (document.getElementById(`link-${id}`) as HTMLInputElement)?.value
+    if (link) {
+      try {
+        await navigator.clipboard.writeText(link);
+      } catch (error: any) {
+        console.error(error.message);
+      }
+    }
+  }
 
   const handleDelete = async () => {
     try {
@@ -96,7 +110,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
     <Card className='m-4'>
       <CardHeader className='relative'>
         <CardTitle>{scenario.Name}</CardTitle>
-        <Link to={{ pathname: "/scenarios/" + scenario._id }} className=" absolute top-4 right-8 z-30" ><FaCirclePlay className='w-12 h-12  text-red-600 hover:text-red-900 dark:hover:text-red-50 ' /></Link>
+        <Link to={{ pathname: "/scenarios/" + scenario._id }} className=" absolute top-4 right-8 z-10" ><FaCirclePlay className='w-12 h-12  text-red-600 hover:text-red-900 dark:hover:text-red-50 ' /></Link>
         <div className=" md:flex justify-center relative overflow-hidden rounded-lg">
           <img src={`src/assets/avatar_${scenario.Avatar}.png`} alt="Image" className="rounded-lg object-cover h-96" />
           <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-stone-800 from-2% to-30%" />
@@ -127,9 +141,48 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
                     Close
                   </Button>
                 </DialogClose>
-                <Button type="button" variant="destructive" className='mb-1 px-8 mx-2' onClick={()=>{handleDelete()}}>
+                <Button type="button" variant="destructive" className='mb-1 px-8 mx-2' onClick={() => { handleDelete() }}>
                   Delete
                 </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <FaLink className='h-6 w-6 mx-2 cursor-pointer' />
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className='text-black dark:text-white'>Embed link</DialogTitle>
+                <DialogDescription>
+                  Place this link inside an iframe
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex items-center space-x-2">
+                <div className="grid flex-1 gap-2">
+                  <Label htmlFor={`link-${scenario._id}`} className="sr-only">
+                    Link
+                  </Label>
+                  <Input
+                    id={`link-${scenario._id}`}
+                    defaultValue={`${window.location.origin}/embedded/scenarios/${scenario._id}`}
+                    readOnly
+                  />
+                </div>
+                <DialogClose asChild>
+                  <Button type="submit" size="sm" className="px-3" onClick={() => { HandleCopyEmbedLink(scenario._id) }}>
+                    <span className="sr-only" >Copy</span>
+                    <Copy />
+                  </Button>
+                </DialogClose>
+              </div>
+              <DialogFooter className="sm:justify-start">
+                <DialogClose asChild>
+                  <Button type="button" variant="secondary">
+                    Close
+                  </Button>
+                </DialogClose>
               </DialogFooter>
             </DialogContent>
           </Dialog>

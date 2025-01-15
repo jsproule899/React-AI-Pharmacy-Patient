@@ -1,4 +1,3 @@
-import React from 'react'
 import ScenarioForm from './ScenarioForm'
 
 function ScenarioFormPage() {

@@ -1,11 +1,7 @@
 "use client"
 
-import React, { Fragment, useEffect, useState } from 'react'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Navigate, useNavigate, useParams } from "react-router";
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from '@/components/ui/checkbox';
 import {
     Form,
     FormControl,
@@ -14,20 +10,24 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
-import axios from 'axios'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Spinner from '@/components/ui/Spinner';
+import { Textarea } from '@/components/ui/textarea';
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router";
+import { z } from "zod";
 
 
 const AIProviders = ["OpenAI", "Claude"]
 
-const openAIModels = ["o1", "o1-mini", "gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest"]
+const openAIModels = ["gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest"]
 
 const claudeModels = ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-5-haiku-20241022", "claude-3-5-sonnet-20241022", "claude-3-opus-20240229"]
 

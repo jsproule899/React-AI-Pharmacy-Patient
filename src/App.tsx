@@ -1,31 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { Button } from './components/ui/button'
-import Navbar from './components/Navigation/Navbar'
+import { BrowserRouter, Route, Routes, useLocation } from "react-router";
+import './App.css';
+import Footer from './components/Navigation/Footer.tsx';
+import Navbar from './components/Navigation/Navbar.tsx';
+import './index.css';
+import ErrorPage from './pages/ErrorPage.tsx';
+import HomePage from './pages/Home/HomePage.tsx';
+import LoginPage from './pages/Login/LoginPage.tsx';
+import ScenarioFormPage from './pages/Scenario/ScenarioFormPage.tsx';
+import ScenarioPage from './pages/Scenario/ScenarioPage.tsx';
+import Scenarios from './pages/Scenario/Scenarios.tsx';
+import Transcripts from './pages/Transcripts/Transcripts.tsx';
+
 
 function App() {
-  const [count, setCount] = useState(0)
+  return (
+    <BrowserRouter>
+      <AppWithRouting />
+    </BrowserRouter>
+  );
+}
+
+function AppWithRouting() {
+  const location = useLocation();
+  const isEmbeddedRoute = location.pathname.startsWith('/embedded');
 
   return (
-    <>
-      <Button onClick={() => setCount((count) => count + 1)} >
-        Click me
-      </Button>
-      <h1 className='text-3xl font-bold underline bg-red-500'>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className='min-h-screen flex flex-col scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar scrollbar-thumb-slate-700 scrollbar-track-slate-300 relative'>
+      {!isEmbeddedRoute && <Navbar />}
+      <Routes>
+        <Route path='*' element={<ErrorPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="scenarios" element={<Scenarios />} />
+        <Route path="scenarios/add" element={<ScenarioFormPage />} />
+        <Route path="scenarios/edit/:id" element={<ScenarioFormPage />} />
+        <Route path="scenarios/:id" element={<ScenarioPage />} />
+        <Route path="/transcripts" element={<Transcripts />} />
+        <Route path="/login" element={<LoginPage />} />
+        {/* Embedded routes without Navbar/Footer */}
+        <Route path="/embedded">
+          <Route path="scenarios/:id" element={<ScenarioPage />} />
+        </Route>
+      </Routes>
+      {!isEmbeddedRoute && <Footer />}
+    </div>
   )
 }
 
