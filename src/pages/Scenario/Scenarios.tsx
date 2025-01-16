@@ -35,8 +35,8 @@ function Scenarios() {
 
     return (
         <div className="flex-grow bg-stone-50 dark:bg-stone-900 ">
-            <div className='relative p-4'>
-                <Link to="/scenarios/add" className='absolute m-4 left-0 top-0'>
+            <div className='relative p-4 mx-4'>
+                <Link to="/scenarios/add" className='absolute my-3 mx-4 left-0 top-0'>
                     <Button>
                         Create New
                         <FaPlus />
