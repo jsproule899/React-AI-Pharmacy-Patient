@@ -12,11 +12,11 @@ function ScenarioPage() {
     const isEmbeddedRoute = location.pathname.startsWith('/embedded');
 
     const { unityProvider, isLoaded, UNSAFE__unityInstance, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage, unload } = useUnityContext({
-        loaderUrl: "../../../unity/Build/Build.loader.js",
-        dataUrl: "../../../unity/Build/Build.data",
-        frameworkUrl: "../../../unity/Build/Build.framework.js",
-        codeUrl: "../../../unity/Build/Build.wasm",
-        streamingAssetsUrl: '../../../unity/StreamingAssets',
+        loaderUrl: "/unity/Build/Build.loader.js",
+        dataUrl: "/unity/Build/Build.data",
+        frameworkUrl: "/unity/Build/Build.framework.js",
+        codeUrl: "/unity/Build/Build.wasm",
+        streamingAssetsUrl: '/unity/StreamingAssets',
     });
 
 

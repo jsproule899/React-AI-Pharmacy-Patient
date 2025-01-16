@@ -110,7 +110,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
         <CardTitle>{scenario.Name}</CardTitle>
         <Link to={{ pathname: "/scenarios/" + scenario._id }} className=" absolute top-4 right-8 z-10" ><FaCirclePlay className='w-12 h-12  text-red-600 hover:text-red-900 dark:hover:text-red-50 ' /></Link>
         <div className=" md:flex justify-center relative overflow-hidden rounded-lg">
-          <img src={`public/img/avatar_${scenario.Avatar}.png`} alt="Image" className="rounded-lg object-cover h-96" />
+          <img src={`/img/avatar_${scenario.Avatar}.png`} alt="Image" className="rounded-lg object-cover h-96" />
           <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-stone-800 from-2% to-30%" />
         </div>
 

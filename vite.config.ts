@@ -10,8 +10,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  publicDir: 'unity', // If your Unity build is inside the "unity" folder
+  publicDir: 'public'// If your Unity build is inside the "unity" folder
 
-  // Optionally, configure the assetsInclude for specific file types
-  assetsInclude: ['**/*.json', '**/*.wasm', '**/*.js', '**/*.data'],
+  
 })
