@@ -1,3 +1,13 @@
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import Spinner from "@/components/ui/Spinner";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
@@ -6,16 +16,6 @@ import { useEffect, useState } from "react";
 import { FaRegPenToSquare } from "react-icons/fa6";
 import { Link } from "react-router";
 import { Scenario } from "../Scenario/ScenarioCard";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 
 export interface Issue {
     _id: string;
@@ -61,12 +61,12 @@ function IssueTable() {
         }
 
         try {
-            const res = axios.put(`${import.meta.env.VITE_API_BASEURL}/api/issue/`)
+            axios.put(`${import.meta.env.VITE_API_BASEURL}/api/issue/`)
             setIssues(issues);
-            setIsLoading(false);
+            ;
+        
         } catch (error) {
             console.log(error);
-            setIsLoading(false);
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
