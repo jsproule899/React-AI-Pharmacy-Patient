@@ -11,7 +11,7 @@ function ScenarioPage() {
     const location = useLocation();
     const isEmbeddedRoute = location.pathname.startsWith('/embedded');
 
-    const { unityProvider, isLoaded, UNSAFE__unityInstance, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage, unload } = useUnityContext({
+    const { unityProvider, isLoaded, UNSAFE__unityInstance, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage,  } = useUnityContext({
         loaderUrl: "/unity/Build/Build.loader.js",
         dataUrl: "/unity/Build/Build.data",
         frameworkUrl: "/unity/Build/Build.framework.js",
@@ -37,9 +37,8 @@ function ScenarioPage() {
     useEffect(() => {
         return () => {
           UNSAFE__detachAndUnloadImmediate();
-          unload();
         };
-      }, []);
+      }, [location]);
 
     function handleFullscreen() {
         requestFullscreen(true);

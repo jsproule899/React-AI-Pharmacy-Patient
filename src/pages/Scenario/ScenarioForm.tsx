@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Spinner from '@/components/ui/Spinner';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -160,6 +161,7 @@ function ScenarioForm() {
     const [voiceProvider, setVoiceProvider] = useState('');
     const [AIProvider, setAIProvider] = useState('');
     const [patientIsSelf, setpatientIsSelf] = useState(true);
+    const { toast } = useToast()
 
     const navigate = useNavigate();
 
@@ -217,18 +219,31 @@ function ScenarioForm() {
         try {
             if (id) {
                 // Update the existing scenario
-                await axios.put(`${import.meta.env.VITE_API_BASEURL}/api/scenario/${id}`, values);
+                axios.put(`${import.meta.env.VITE_API_BASEURL}/api/scenario/${id}`, values);
+                toast({
+                    description: "Scenario updating..."
+                })
             } else {
                 // Create a new scenario
-                await axios.post(`${import.meta.env.VITE_API_BASEURL}/api/scenario`, values, {
+                axios.post(`${import.meta.env.VITE_API_BASEURL}/api/scenario`, values, {
                     headers: {
                         'content-type': 'application/x-www-form-urlencoded'
                     }
-                });
+                })
+                toast({
+                    description: "Adding Scenario"
+                })
+
             }
             navigate("/scenarios"); // Navigate to the scenarios list after successful submission
         } catch (error) {
             console.error("Error saving scenario", error);
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem with your request. Please try again.",
+               
+              })
         }
     };
 

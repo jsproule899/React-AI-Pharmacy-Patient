@@ -31,7 +31,7 @@ import { Link } from 'react-router';
 
 export interface Scenario {
   _id: string;
-  id: number;
+  id: Number;
   Context: string;
   Name: string;
   Self: boolean;
