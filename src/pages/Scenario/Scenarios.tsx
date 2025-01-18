@@ -6,6 +6,7 @@ import { FaPlus } from "react-icons/fa6";
 import { Link } from 'react-router';
 import CardSkeleton from './CardSkeleton';
 import ScenarioCard from './ScenarioCard';
+import { toast } from '@/hooks/use-toast';
 
 const ScenariosHeader = () => {
     return (
@@ -35,6 +36,11 @@ function Scenarios() {
         } catch (error) {
             console.log(error);
             setIsLoading(false); // Stop loading on error
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem loading the issues. Please try again.",
+            })
         }
     };
 

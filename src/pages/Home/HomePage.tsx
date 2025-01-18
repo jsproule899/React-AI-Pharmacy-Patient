@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router";
 
 function HomePage() {
     return (
@@ -11,9 +12,11 @@ function HomePage() {
                         Enhance your pharmacy education through AI-driven roleplays and
                         simulations.
                     </p>
+                    <Link to='/scenarios'>
                     <Button variant="secondary">
                         Get Started
                     </Button>
+                    </Link>
                 </div>
 
                 <section className="py-24 text-center max-w-full">
@@ -73,9 +76,11 @@ function HomePage() {
             <h2 className="text-3xl font-bold mb-8 text-black dark:text-gray-100">
                     Start Your Pharmacy Education Journey Today!
                 </h2>
+                <Link to='/login'>
                 <Button variant="default">
                     Sign Up Now
                 </Button>
+                </Link>
             </section>
 
         

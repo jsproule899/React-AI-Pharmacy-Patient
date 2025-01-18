@@ -73,7 +73,7 @@ function IssueTable() {
         return <Spinner />;
     }
 
-    const handleStatusUpdate = (id: String | undefined) => {
+    const handleStatusUpdate = async (id: String | undefined) => {
         if (!id) {
             toast({
                 variant: "destructive",
@@ -83,9 +83,7 @@ function IssueTable() {
         }
 
         try {
-            axios.put(`${import.meta.env.VITE_API_BASEURL}/api/issue/${id}`, { Status: selectedStatus });
-            fetchIssues()
-
+            axios.put(`${import.meta.env.VITE_API_BASEURL}/api/issue/${id}`, { Status: selectedStatus }).then(()=>fetchIssues())
         } catch (error) {
             console.log(error);
             toast({

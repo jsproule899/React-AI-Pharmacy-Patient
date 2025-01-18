@@ -106,7 +106,7 @@ const Navbar = () => {
                         </NavLink>
                         <NavLink to="/issues" className={({ isActive }) =>
                         isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
-                    }>
+                    } onClick={toggleMenu}>
                         Issues
                     </NavLink>
                     </nav>

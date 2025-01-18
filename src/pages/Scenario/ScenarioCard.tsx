@@ -164,7 +164,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
                   </Label>
                   <Input
                     id={`link-${scenario._id}`}
-                    defaultValue={`<iframe src="${window.location.origin}/embedded/scenarios/${scenario._id} style="width:720px;height:405px;" allow="camera; microphone" allowfullscreen title=""></iframe>`
+                    defaultValue={`<iframe src="${window.location.origin}/embedded/scenarios/${scenario._id}" style="width:720px;height:405px;" allow="camera; microphone" allowfullscreen title=""></iframe>`
                     }
                     readOnly
                   />
