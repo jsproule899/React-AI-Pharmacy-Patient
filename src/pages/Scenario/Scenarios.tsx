@@ -7,6 +7,19 @@ import { Link } from 'react-router';
 import CardSkeleton from './CardSkeleton';
 import ScenarioCard from './ScenarioCard';
 
+const ScenariosHeader = () => {
+    return (
+        <div className='relative p-4 mx-4'>
+            <Link to="/scenarios/add" className='absolute my-3 mx-4 left-0 top-0'>
+                <Button>
+                    Create New
+                    <FaPlus />
+                </Button>
+            </Link>
+
+        </div>
+    )
+}
 
 function Scenarios() {
 
@@ -26,29 +39,30 @@ function Scenarios() {
     };
 
     useEffect(() => {
-        fetchScenarios(); // Call the fetch function when component mounts
-    }, []); // Empty dependency array to run once when the component mounts
-    // Show loading spinner while fetching data
-    if (isLoading) {
-        return <CardSkeleton />;
-    }
+        fetchScenarios();
+    }, []);
+
 
     return (
         <div className="flex-grow bg-stone-50 dark:bg-stone-900 ">
-            <div className='relative p-4 mx-4'>
-                <Link to="/scenarios/add" className='absolute my-3 mx-4 left-0 top-0'>
-                    <Button>
-                        Create New
-                        <FaPlus />
-                    </Button>
-                </Link>
+            <ScenariosHeader />
+            {
+                isLoading ? <CardSkeleton /> :
+                    scenarios.length == 0 ?
+                        <div className='flex justify-center m-4'>
+                            <h2 className='text-2xl font-bold text-stone-950 dark:text-stone-50'>No Scenarios found... Please create one or try again later.</h2>
+                        </div>
+                        :
+                        scenarios.map((scenario, index) => {
 
-            </div>
-            <div className='flex justify-start  flex-wrap m-4'>
-                {scenarios.map((scenario, index) => {
-                    return <ScenarioCard key={index} scenario={scenario} onScenarioDeleted={fetchScenarios} />;
-                })}
-            </div>
+                            return (
+
+                                <div className='inline-block m-4'>
+                                        <ScenarioCard key={index} scenario={scenario} onScenarioDeleted={fetchScenarios} />
+                                </div>
+                            )
+                        })}
+
         </div>
     )
 

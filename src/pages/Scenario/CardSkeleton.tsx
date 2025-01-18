@@ -1,30 +1,28 @@
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FaPlus } from 'react-icons/fa6'
-import { Link } from 'react-router'
+
+const ScenarioCardSkeleton = () => {
+    return (
+        <Skeleton className='w-[432px] h-[492px] m-4 relative'>
+            <Skeleton className='w-12 h-12 top-4 right-8 rounded-full absolute ' />
+            <Skeleton className='p-6 m-4 w-8/12' />
+            <Skeleton className='rounded-lg object-cover h-72 m-4' />
+            <Skeleton className='p-3 m-4 w-10/12 relative' />
+            <Skeleton className='p-3 m-4  w-8/12 relative' />
+            <Skeleton className='p-2 m-4 w-6/12 relative' />
+        </Skeleton>
+    )
+}
+
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const CardSkeleton = () => {
     return (
-        <div className="flex-grow flex-wrap bg-stone-50 dark:bg-stone-900 ">
-            <div className='relative p-4'>
-                <Link to="/scenarios/add" className='absolute m-4 left-0 top-0'>
-                    <Button>
-                        Create New
-                        <FaPlus />
-                    </Button>
-                </Link>
 
-            </div>
-            <div className='flex justify-start flex-wrap m-4'>
-                <Skeleton className='w-[432px] h-[492px] m-4' />
-                <Skeleton className='w-[432px] h-[492px] m-4' />
-                <Skeleton className='w-[432px] h-[492px] m-4' />
-                <Skeleton className='w-[432px] h-[492px] m-4' />
-                <Skeleton className='w-[432px] h-[492px] m-4' />
-                <Skeleton className='w-[432px] h-[492px] m-4' />
-                <Skeleton className='w-[432px] h-[492px] m-4' />
-                <Skeleton className='w-[432px] h-[492px] m-4' />
-            </div>
+        <div className='flex justify-start flex-wrap m-4'>
+            {
+                numbers.map((key) => {
+                    return <ScenarioCardSkeleton key={key} />
+                })}
         </div>
     )
 }

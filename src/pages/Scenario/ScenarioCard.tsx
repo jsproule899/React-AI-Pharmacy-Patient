@@ -6,7 +6,7 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { useState } from 'react';
-import { FaCirclePlay, FaLink, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { FaCirclePlay, FaCode, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 import {
   Dialog,
@@ -118,7 +118,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
       </CardHeader>
 
       <CardFooter className='text-sm self-end flex flex-grow justify-between '>
-        <TimeAgo date={new Date(scenario.createdAt)}/>
+        <TimeAgo date={new Date(scenario.createdAt)} />
         <div className='flex justify-between'>
           <Link to={{ pathname: "/scenarios/edit/" + scenario._id }} >
             <FaRegPenToSquare className='h-6 w-6 mx-2 cursor-pointer' />
@@ -148,13 +148,13 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
 
           <Dialog>
             <DialogTrigger asChild>
-              <FaLink className='h-6 w-6 mx-2 cursor-pointer' />
+              <FaCode className='h-6 w-6 mx-2 cursor-pointer' />
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle className='text-black dark:text-white'>Embed link</DialogTitle>
                 <DialogDescription>
-                  Place this link inside an iframe
+                  Place this iframe onto your web page.
                 </DialogDescription>
               </DialogHeader>
               <div className="flex items-center space-x-2">
@@ -164,7 +164,8 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
                   </Label>
                   <Input
                     id={`link-${scenario._id}`}
-                    defaultValue={`${window.location.origin}/embedded/scenarios/${scenario._id}`}
+                    defaultValue={`<iframe src="${window.location.origin}/embedded/scenarios/${scenario._id} style="width:720px;height:405px;" allow="camera; microphone" allowfullscreen title=""></iframe>`
+                    }
                     readOnly
                   />
                 </div>
