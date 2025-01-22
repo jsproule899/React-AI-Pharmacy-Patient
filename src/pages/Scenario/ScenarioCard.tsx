@@ -105,7 +105,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
   };
 
   return (
-    <Card className='m-4'>
+    <Card className='inline-block m-4 '>
       <CardHeader className='relative text-xl text--f'>
         <CardTitle>{scenario.Name}</CardTitle>
         <Link to={{ pathname: "/scenarios/" + scenario._id }} className=" absolute top-4 right-8 z-10" ><FaCirclePlay className='w-12 h-12  text-red-600 hover:text-red-900 dark:hover:text-red-50 ' /></Link>
@@ -124,7 +124,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
             <FaRegPenToSquare className='h-6 w-6 mx-2 cursor-pointer' />
           </Link>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild><div><FaTrashCan className='h-6 w-6 mx-2 cursor-pointer' /></div></DialogTrigger>
+            <DialogTrigger asChild><button><FaTrashCan className='h-6 w-6 mx-2 cursor-pointer' /></button></DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle className='text-black dark:text-white'>Are you absolutely sure?</DialogTitle>
@@ -148,7 +148,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
 
           <Dialog>
             <DialogTrigger asChild>
-              <FaCode className='h-6 w-6 mx-2 cursor-pointer' />
+              <button><FaCode className='h-6 w-6 mx-2 cursor-pointer' /></button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>

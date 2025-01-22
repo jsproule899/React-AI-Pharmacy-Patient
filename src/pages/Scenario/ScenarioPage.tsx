@@ -1,6 +1,7 @@
-
 import Spinner from "@/components/ui/Spinner";
-import { useEffect } from "react";
+import { toast } from "@/hooks/use-toast";
+import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
 import { FaExpand } from "react-icons/fa6";
 import { useLocation } from "react-router";
 import { Unity, useUnityContext } from "react-unity-webgl";
@@ -9,15 +10,35 @@ import { Unity, useUnityContext } from "react-unity-webgl";
 function ScenarioPage() {
 
     const location = useLocation();
+    const [isUploading, setIsUploading] = useState(false);
     const isEmbeddedRoute = location.pathname.startsWith('/embedded');
 
-    const { unityProvider, isLoaded, UNSAFE__unityInstance, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage,  } = useUnityContext({
+    const { unityProvider, isLoaded, UNSAFE__unityInstance, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage, unload, addEventListener, removeEventListener } = useUnityContext({
         loaderUrl: "/unity/Build/Build.loader.js",
         dataUrl: "/unity/Build/Build.data",
         frameworkUrl: "/unity/Build/Build.framework.js",
         codeUrl: "/unity/Build/Build.wasm",
         streamingAssetsUrl: '/unity/StreamingAssets',
     });
+
+    const handleTranscriptUpload = useCallback((filename: string, data: string) => {
+        let paths = location.pathname.split("/");
+        let scenarioId = paths[paths.length-1];
+        setIsUploading(true);
+        try {
+            axios.post(`${import.meta.env.VITE_API_BASEURL}/api/transcript`, { Filename: filename, Data: data, Scenario: scenarioId }).then(() => {
+                setIsUploading(false);
+            })
+        } catch (error) {
+            console.log(error);
+            setIsUploading(false);
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem uploading the transcript.",
+            })
+        }
+    }, [])
 
 
     useEffect(
@@ -27,23 +48,37 @@ function ScenarioPage() {
 
     useEffect(
         () => {
-            if(isLoaded){
+            if (isLoaded) {
                 sendMessage("ConfigController", "SetApiBaseUrl", import.meta.env.VITE_API_BASEURL)
             }
-           
+
         }, [isLoaded]
     )
 
     useEffect(() => {
         return () => {
-          UNSAFE__detachAndUnloadImmediate();
+            
+            UNSAFE__detachAndUnloadImmediate();
+            
         };
-      }, [location]);
+    }, [location]);
+
+    useEffect(() => {
+        addEventListener("UploadTranscript", handleTranscriptUpload as any);
+        return () => {
+            removeEventListener("UploadTranscript", handleTranscriptUpload as any);
+        };
+    }, [addEventListener, removeEventListener, handleTranscriptUpload]);
 
     function handleFullscreen() {
         requestFullscreen(true);
     }
 
+    window.onbeforeunload = function() {
+        if (isUploading) {
+            return "Your transcript is not completely uploaded...";
+        }
+  }
 
     return (
 

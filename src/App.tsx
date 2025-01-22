@@ -12,6 +12,7 @@ import Scenarios from './pages/Scenario/Scenarios.tsx';
 import Transcripts from './pages/Transcripts/Transcripts.tsx';
 import { Toaster } from "./components/ui/toaster.tsx";
 import IssuesPage from "./pages/Issues/IssuesPage.tsx";
+import TranscriptPage from "./pages/Transcripts/TranscriptPage.tsx";
 
 
 function App() {
@@ -37,6 +38,7 @@ function AppWithRouting() {
         <Route path="scenarios/edit/:id" element={<ScenarioFormPage />} />
         <Route path="scenarios/:id" element={<ScenarioPage />} />
         <Route path="/transcripts" element={<Transcripts />} />
+        <Route path="/transcripts/:id" element={<TranscriptPage />} />
         <Route path="/issues" element={<IssuesPage />} />
         <Route path="/login" element={<LoginPage />} />
         {/* Embedded routes without Navbar/Footer */}

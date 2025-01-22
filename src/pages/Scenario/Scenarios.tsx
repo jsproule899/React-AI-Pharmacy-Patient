@@ -10,7 +10,7 @@ import { toast } from '@/hooks/use-toast';
 
 const ScenariosHeader = () => {
     return (
-        <div className='relative p-4 mx-4'>
+        <div className='relative p-4 mx-4 mb-4 '>
             <Link to="/scenarios/add" className='absolute my-3 mx-4 left-0 top-0'>
                 <Button>
                     Create New
@@ -60,13 +60,7 @@ function Scenarios() {
                         </div>
                         :
                         scenarios.map((scenario, index) => {
-
-                            return (
-
-                                <div className='inline-block m-4'>
-                                        <ScenarioCard key={index} scenario={scenario} onScenarioDeleted={fetchScenarios} />
-                                </div>
-                            )
+                            return <ScenarioCard key={index} scenario={scenario} onScenarioDeleted={fetchScenarios} />
                         })}
 
         </div>
