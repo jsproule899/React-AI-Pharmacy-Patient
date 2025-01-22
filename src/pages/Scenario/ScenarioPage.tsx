@@ -13,7 +13,9 @@ function ScenarioPage() {
     const [isUploading, setIsUploading] = useState(false);
     const isEmbeddedRoute = location.pathname.startsWith('/embedded');
 
-    const { unityProvider, isLoaded, UNSAFE__unityInstance, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage, unload, addEventListener, removeEventListener } = useUnityContext({
+
+    const { unityProvider, isLoaded, UNSAFE__unityInstance, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage, addEventListener, removeEventListener } = useUnityContext({
+
         loaderUrl: "/unity/Build/Build.loader.js",
         dataUrl: "/unity/Build/Build.data",
         frameworkUrl: "/unity/Build/Build.framework.js",
