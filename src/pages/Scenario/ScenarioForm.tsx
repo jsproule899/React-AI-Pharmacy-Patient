@@ -26,11 +26,13 @@ import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 
 
-const AIProviders = ["OpenAI", "Claude"]
+const AIProviders = ["OpenAI", "Claude", "DeepSeek"]
 
 const openAIModels = ["gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest"]
 
 const claudeModels = ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-5-haiku-20241022", "claude-3-5-sonnet-20241022", "claude-3-opus-20240229"]
+
+const deepSeekModels = ["deepseek-chat", "deepseek-reasoner"]
 
 const voiceProviders = ["Unreal Speech", "Eleven Labs"]
 
@@ -242,8 +244,8 @@ function ScenarioForm() {
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
                 description: "There was a problem with your request. Please try again.",
-               
-              })
+
+            })
         }
     };
 
@@ -263,6 +265,8 @@ function ScenarioForm() {
             return openAIModels;
         } else if (AIProvider === AIProviders[1]) {
             return claudeModels;
+        } else if (AIProvider === AIProviders[2]) {
+            return deepSeekModels;
         } else {
             return []; // Default to an empty array if no provider is selected
         }
