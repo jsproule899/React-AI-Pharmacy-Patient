@@ -14,7 +14,7 @@ function ScenarioPage() {
     const isEmbeddedRoute = location.pathname.startsWith('/embedded');
 
 
-    const { unityProvider, isLoaded, UNSAFE__unityInstance, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage, addEventListener, removeEventListener } = useUnityContext({
+    const { unityProvider, isLoaded, UNSAFE__unityInstance, unload, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage, addEventListener, removeEventListener } = useUnityContext({
 
         loaderUrl: "/unity/Build/Build.loader.js",
         dataUrl: "/unity/Build/Build.data",
@@ -25,7 +25,7 @@ function ScenarioPage() {
 
     const handleTranscriptUpload = useCallback((filename: string, data: string) => {
         let paths = location.pathname.split("/");
-        let scenarioId = paths[paths.length-1];
+        let scenarioId = paths[paths.length - 1];
         setIsUploading(true);
         try {
             axios.post(`${import.meta.env.VITE_API_BASEURL}/api/transcript`, { Filename: filename, Data: data, Scenario: scenarioId }).then(() => {
@@ -59,11 +59,11 @@ function ScenarioPage() {
 
     useEffect(() => {
         return () => {
-            
             UNSAFE__detachAndUnloadImmediate();
-            
+            unload()
+
         };
-    }, [location]);
+    }, []);
 
     useEffect(() => {
         addEventListener("UploadTranscript", handleTranscriptUpload as any);
@@ -76,11 +76,11 @@ function ScenarioPage() {
         requestFullscreen(true);
     }
 
-    window.onbeforeunload = function() {
+    window.onbeforeunload = function () {
         if (isUploading) {
             return "Your transcript is not completely uploaded...";
         }
-  }
+    }
 
     return (
 

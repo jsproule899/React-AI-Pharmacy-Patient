@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaCirclePlay, FaCode, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 import {
@@ -69,7 +69,10 @@ interface ScenarioProps {
 
 function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
+
+  const [isCopied, setIsCopied] = useState(false);
 
   const TimeAgo = ({ date }: { date: Date }) => {
     // Get the formatted string for time difference
@@ -82,23 +85,49 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
     return <div>Added {timeAgo}</div>;
   };
 
-  const HandleCopyEmbedLink = async (id: string | undefined) => {
+  const handleCopyEmbedLink = async (id: string | undefined) => {
     let link = (document.getElementById(`link-${id}`) as HTMLInputElement)?.value
+
     if (link) {
       try {
         await navigator.clipboard.writeText(link);
+
       } catch (error: any) {
         console.error(error.message);
       }
     }
   }
 
+  useEffect(() => {
+
+    const handleKeyDown = (event: any) => {
+      if (event.ctrlKey && event.key === 'c') {
+        setIsCopied(true);
+
+        // Reset the "Copied!" state after 2 seconds
+        setTimeout(() => {
+          setIsCopied(false);
+        }, 1000);
+
+      }
+    };
+
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+
+      document.removeEventListener('keydown', handleKeyDown);
+
+    };
+  }, []);
+
   const handleDelete = async () => {
     try {
       await axios.delete(`${import.meta.env.VITE_API_BASEURL}/api/scenario/${scenario._id}`);
       console.log(`Scenario ${scenario._id} deleted`);
       onScenarioDeleted(); // Trigger the callback to re-fetch scenarios
-      setIsDialogOpen(false); // Close the dialog after deletion
+      setIsDeleteDialogOpen(false); // Close the dialog after deletion
     } catch (error) {
       console.error("Error deleting scenario:", error);
     }
@@ -123,7 +152,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
           <Link to={{ pathname: "/scenarios/edit/" + scenario._id }} >
             <FaRegPenToSquare className='h-6 w-6 mx-2 cursor-pointer' />
           </Link>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
             <DialogTrigger asChild><button><FaTrashCan className='h-6 w-6 mx-2 cursor-pointer' /></button></DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -146,7 +175,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
             </DialogContent>
           </Dialog>
 
-          <Dialog>
+          <Dialog open={isCopyDialogOpen} onOpenChange={setIsCopyDialogOpen}>
             <DialogTrigger asChild>
               <button><FaCode className='h-6 w-6 mx-2 cursor-pointer' /></button>
             </DialogTrigger>
@@ -170,9 +199,15 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
                   />
                 </div>
                 <DialogClose asChild>
-                  <Button type="submit" size="sm" className="px-3" onClick={() => { HandleCopyEmbedLink(scenario._id) }}>
-                    <span className="sr-only" >Copy</span>
-                    <Copy />
+                  <Button type="submit" size="sm" className="px-3" onClick={() => { handleCopyEmbedLink(scenario._id) }}>
+                    {isCopied ? (
+                      <p id="copy-icon" className="inline">Copied!</p>
+                    ) : (
+                      <>
+                        <span className="sr-only">Copy</span>
+                        <Copy id="copy-icon" className="h-4 w-4" />
+                      </>
+                    )}
                   </Button>
                 </DialogClose>
               </div>
