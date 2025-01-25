@@ -5,8 +5,8 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import { useEffect, useState } from 'react';
-import { FaCirclePlay, FaCode, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { useEffect, useRef, useState } from 'react';
+import { FaCirclePlay, FaCode, FaRegCopy, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 import {
   Dialog,
@@ -22,9 +22,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
-import { Copy } from 'lucide-react';
 import { Link } from 'react-router';
 
 
@@ -71,8 +71,13 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
-
+  const [iframeWidth, setIframeWidth] = useState("100%");
+  const [iframeAspect, setIframeAspect] = useState("16/9");
   const [isCopied, setIsCopied] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const iframeCode = `<iframe src="${window.location.origin}/embedded/scenarios/${scenario._id}" style="width:${iframeWidth};aspect-ratio:${iframeAspect};display:block; margin:auto;" allow="camera; microphone" allowfullscreen title="Pharmacy-Roleplay"></iframe>`
+
 
   const TimeAgo = ({ date }: { date: Date }) => {
     // Get the formatted string for time difference
@@ -84,6 +89,12 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
     const timeAgo = formatDistanceToNow(date, { addSuffix: true });
     return <div>Added {timeAgo}</div>;
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      inputRef.current?.select();
+    }, 0);
+  }, [iframeCode, isCopyDialogOpen]);
 
   const handleCopyEmbedLink = async (id: string | undefined) => {
     let link = (document.getElementById(`link-${id}`) as HTMLInputElement)?.value
@@ -101,7 +112,10 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
   useEffect(() => {
 
     const handleKeyDown = (event: any) => {
-      if (event.ctrlKey && event.key === 'c') {
+      const input = event.target;
+      const isTextSelected = input.selectionStart !== input.selectionEnd;
+
+      if ((event.ctrlKey || event.metaKey) && event.key === 'c' && isTextSelected) {
         setIsCopied(true);
 
         // Reset the "Copied!" state after 2 seconds
@@ -111,14 +125,9 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
 
       }
     };
-
-
     document.addEventListener('keydown', handleKeyDown);
-
     return () => {
-
       document.removeEventListener('keydown', handleKeyDown);
-
     };
   }, []);
 
@@ -135,9 +144,9 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
 
   return (
     <Card className='inline-block m-4 '>
-      <CardHeader className='relative text-xl text--f'>
+      <CardHeader className='relative text-xl m-a'>
         <CardTitle>{scenario.Name}</CardTitle>
-        <Link to={{ pathname: "/scenarios/" + scenario._id }} className=" absolute top-4 right-8 z-10" ><FaCirclePlay className='w-12 h-12  text-red-600 hover:text-red-900 dark:hover:text-red-50 ' /></Link>
+        <Link to={{ pathname: "/scenarios/" + scenario._id }} className=" absolute top-4 right-8 z-10 p-1" ><FaCirclePlay className='w-12 h-12  text-red-600 hover:text-red-900 dark:hover:text-red-50 ' /></Link>
         <div className=" md:flex justify-center relative overflow-hidden rounded-lg">
           <img src={`/img/avatar_${scenario.Avatar}.png`} alt="Image" className="rounded-lg object-cover h-96" />
           <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-stone-800 from-2% to-30%" />
@@ -186,30 +195,68 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
                   Place this iframe onto your web page.
                 </DialogDescription>
               </DialogHeader>
-              <div className="flex items-center space-x-2">
-                <div className="grid flex-1 gap-2">
+
+              <div className="flex flex-col gap-2 ">
+
+
+                <div className="flex gap-2 flex-grow">
+                  <div className="flex-col">
+                    <Label className="text-xs font-light  text-stone-950 dark:text-stone-50">Aspect Ratio</Label>
+
+                    <Select onValueChange={setIframeAspect}>
+
+                      <SelectTrigger className="w-20  text-stone-950 dark:text-stone-50">
+
+                        <SelectValue placeholder={iframeAspect.replace('/', ':')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="16/9">16:9</SelectItem>
+                        <SelectItem value="4/3">4:3</SelectItem>
+                        <SelectItem value="9/16">9:16</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex-col">
+                    <Label className="text-xs font-light text-stone-950 dark:text-stone-50"> Width</Label>
+                    <Select onValueChange={setIframeWidth}>
+                      <SelectTrigger className="w-20  text-stone-950 dark:text-stone-50">
+                        <SelectValue placeholder={iframeWidth} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="100%">100%</SelectItem>
+                        <SelectItem value="80%">80%</SelectItem>
+                        <SelectItem value="50%">50%</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex flex-row gap-2 items-center">
                   <Label htmlFor={`link-${scenario._id}`} className="sr-only">
                     Link
                   </Label>
                   <Input
                     id={`link-${scenario._id}`}
-                    defaultValue={`<iframe src="${window.location.origin}/embedded/scenarios/${scenario._id}" style="width:720px;height:405px;" allow="camera; microphone" allowfullscreen title=""></iframe>`
-                    }
+                    value={iframeCode}
                     readOnly
+                    ref={inputRef}
+                    autoFocus
+                    onClick={() => inputRef.current?.select()}
                   />
+
+                  <DialogClose asChild>
+                    <Button type="submit" size="sm" className="px-3" onClick={() => { handleCopyEmbedLink(scenario._id) }}>
+                      {isCopied ? (
+                        <p id="copy-icon" className="inline">Copied!</p>
+                      ) : (
+                        <>
+                          <span className="sr-only">Copy</span>
+                          <FaRegCopy id="copy-icon" className="h-4 w-4" />
+                        </>
+                      )}
+                    </Button>
+                  </DialogClose>
                 </div>
-                <DialogClose asChild>
-                  <Button type="submit" size="sm" className="px-3" onClick={() => { handleCopyEmbedLink(scenario._id) }}>
-                    {isCopied ? (
-                      <p id="copy-icon" className="inline">Copied!</p>
-                    ) : (
-                      <>
-                        <span className="sr-only">Copy</span>
-                        <Copy id="copy-icon" className="h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                </DialogClose>
               </div>
               <DialogFooter className="sm:justify-start">
                 <DialogClose asChild>
