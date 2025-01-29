@@ -207,8 +207,8 @@ const ChatLogDisplay = () => {
             {messages.length === 0 ? <input type="file" accept=".txt" onChange={handleFileUpload} className="mb-4 p-2 border rounded max-w-96  text-stone-950 dark:text-stone-50" />
                 : (<>
                     <div id='chatlog-download' className='flex justify-center text-stone-950 dark:text-stone-50'>
-                        {isDownloading ? <FaSpinner className='h-9 w-9 mx-6 justify-self-center ' /> : <FaFileArrowDown className='h-9 w-9 mx-6 cursor-pointer justify-self-center ' onClick={() => handleDownload()} />}
-                        {isGeneratingPdf ? <FaSpinner className='h-9 w-9 mx-6 justify-self-center ' /> : <FaFilePdf className='h-9 w-9 mx-6 cursor-pointer justify-self-center ' onClick={() => generatePdf()} />}
+                        {isDownloading ? <FaSpinner className='h-9 w-9 mx-6 cursor-wait justify-self-center animate-spin' /> : <FaFileArrowDown className='h-9 w-9 mx-6 cursor-pointer justify-self-center ' onClick={() => handleDownload()} />}
+                        {isGeneratingPdf ? <FaSpinner className='h-9 w-9 mx-6 cursor-wait justify-self-center animate-spin' /> : <FaFilePdf className='h-9 w-9 mx-6 cursor-pointer justify-self-center ' onClick={() => generatePdf()} />}
                     </div>
                     <div id="chatlog-window" className="mt-4 border border-gray-300 dark:border-stone-700 rounded-lg p-4 max-w-5xl mx-auto bg-gray-50 dark:bg-stone-800 shadow-md">
                         {messages.map((message, index) => (

@@ -12,7 +12,9 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-  		colors: {}
+  		colors: {
+        'qub-red': '#D6000D',
+      }
   	}
   },
   plugins: [require("tailwindcss-animate"),  require('tailwind-scrollbar'),],
