@@ -23,43 +23,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Scenario } from "@/types/Scenario";
 import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router';
 
 
 
-export interface Scenario {
-  _id: string;
-  id: Number;
-  Context: string;
-  Name: string;
-  Self: boolean;
-  Other_Person: OtherPerson;
-  Age: string;
-  Gender: string;
-  Medicines: string;
-  AdditionalMeds: string;
-  History: string;
-  Symptoms: string;
-  Allergies: string;
-  Time: string;
-  Outcome: string;
-  AI: string;
-  Model: string;
-  TTS: string;
-  Voice: string;
-  Avatar: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
-export interface OtherPerson {
-  Name: string;
-  Age: string;
-  Gender: string;
-  Relationship: string;
-}
 
 interface ScenarioProps {
   scenario: Scenario;

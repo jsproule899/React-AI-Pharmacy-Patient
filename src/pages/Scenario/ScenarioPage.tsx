@@ -14,7 +14,7 @@ function ScenarioPage() {
     const isEmbeddedRoute = location.pathname.startsWith('/embedded');
 
 
-    const { unityProvider, isLoaded, UNSAFE__unityInstance, unload, UNSAFE__detachAndUnloadImmediate, requestFullscreen, sendMessage, addEventListener, removeEventListener } = useUnityContext({
+    const { unityProvider, isLoaded, UNSAFE__unityInstance, requestFullscreen, sendMessage, addEventListener, removeEventListener } = useUnityContext({
 
         loaderUrl: "/unity/Build/Build.loader.js",
         dataUrl: "/unity/Build/Build.data",
@@ -43,24 +43,30 @@ function ScenarioPage() {
     }, [])
 
 
-    useEffect(
-        () => { (window as any).myInstance = UNSAFE__unityInstance as any },
-        [UNSAFE__unityInstance]
-    );
+    useEffect(() => {
+        (window as any).myInstance = UNSAFE__unityInstance as any
+    }, [UNSAFE__unityInstance]);
 
-    useEffect(
-        () => {
-            if (isLoaded) {
-                sendMessage("ConfigController", "SetApiBaseUrl", import.meta.env.VITE_API_BASEURL)
-            }
+    useEffect(() => {
+        if (isLoaded) {
+            sendMessage("ConfigController", "SetApiBaseUrl", import.meta.env.VITE_API_BASEURL)
+        }
+    }, [isLoaded])
 
-        }, [isLoaded]
-    )
+    const unloadUnity = async () => {
+        const canvas = (window as any).myInstance?.Module.canvas as HTMLCanvasElement;
+        document.body.appendChild(canvas);
+        canvas.style.display = "none";
+        await (window as any).myInstance.Quit();
+        await UNSAFE__unityInstance?.Quit();
+        unityProvider.setUnityInstance(null);
+        (window as any).myInstance = null;
+        canvas.remove();
+    }
 
     useEffect(() => {
         return () => {
-            UNSAFE__detachAndUnloadImmediate();
-            unload()
+            unloadUnity();
 
         };
     }, []);
