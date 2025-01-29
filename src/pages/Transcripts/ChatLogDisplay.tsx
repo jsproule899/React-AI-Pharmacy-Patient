@@ -1,12 +1,12 @@
 import Spinner from '@/components/ui/Spinner';
 import { toast } from '@/hooks/use-toast';
+import { Transcript } from '@/types/Transcript';
 import axios from 'axios';
 import html2canvas from 'html2canvas';
 import { jsPDF } from "jspdf";
 import { useEffect, useState } from 'react';
 import { FaFileArrowDown, FaFilePdf, FaSpinner } from 'react-icons/fa6';
 import { useParams } from 'react-router';
-import { Transcript } from './Transcripts';
 
 const ChatLogDisplay = () => {
     const { id } = useParams<{ id?: string }>();
@@ -185,8 +185,8 @@ const ChatLogDisplay = () => {
             // Clean up the Object URL after download
             URL.revokeObjectURL(url);
         }
-        setTimeout(()=>setIsDownloading(false),2000);
-        
+        setTimeout(() => setIsDownloading(false), 2000);
+
 
     }
 

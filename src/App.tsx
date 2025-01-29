@@ -12,7 +12,6 @@ import ScenarioFormPage from './pages/Scenario/ScenarioFormPage.tsx';
 import ScenarioPage from './pages/Scenario/ScenarioPage.tsx';
 import Scenarios from './pages/Scenario/Scenarios.tsx';
 import TranscriptPage from "./pages/Transcripts/TranscriptPage.tsx";
-import Transcripts from './pages/Transcripts/Transcripts.tsx';
 import TranscriptsPage from "./pages/Transcripts/TranscriptsPage.tsx";
 
 

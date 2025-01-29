@@ -50,7 +50,7 @@ export const columns: ColumnDef<Transcript>[] = [
                 </Button>
             )
         },
-        enableSorting:true,
+        enableSorting: true,
         sortDescFirst: true,
         cell: ({ row }) => {
 
@@ -59,6 +59,7 @@ export const columns: ColumnDef<Transcript>[] = [
         },
     },
     {
+        id: "view",
         accessorKey: "_id",
         header: () => {
 
@@ -67,12 +68,13 @@ export const columns: ColumnDef<Transcript>[] = [
             )
         },
         cell: ({ row }) => {
-            return <Link to={{ pathname: `/transcripts/${row.getValue("_id")}` }} >
+            return <Link to={{ pathname: `/transcripts/${row.getValue("view")}` }} >
                 <FaFileLines className='h-6 w-6  cursor-pointer justify-self-center text-stone-950 dark:text-stone-50' />
             </Link>
         },
     },
     {
+        id: "download",
         accessorKey: "_id",
         header: () => {
 
@@ -84,7 +86,7 @@ export const columns: ColumnDef<Transcript>[] = [
             const { downloadLoadingId, handleDownload } = useTableContext();
             return (
                 <>
-                    {downloadLoadingId === row.getValue("_id") ? (
+                    {downloadLoadingId === row.getValue("download") ? (
                         <FaSpinner className='h-6 w-6  cursor-wait justify-self-center animate-spin text-stone-950 dark:text-stone-50' />
                     ) : (
                         <FaFileArrowDown className='h-6 w-6 cursor-pointer justify-self-center text-stone-950 dark:text-stone-50' onClick={() => handleDownload(row.original)} />
@@ -96,6 +98,7 @@ export const columns: ColumnDef<Transcript>[] = [
         },
     },
     {
+        id: "remove",
         accessorKey: "_id",
         header: () => {
 
@@ -122,7 +125,7 @@ export const columns: ColumnDef<Transcript>[] = [
                             <Button type="button" variant="outline" className='mb-1 px-8 mx-2 '>Close</Button>
                         </DialogClose>
                         <DialogClose asChild>
-                            <Button type="button" variant="destructive" className='mb-1 px-8 mx-2' onClick={() => { handleDelete(row.getValue("_id")) }}>Delete</Button>
+                            <Button type="button" variant="destructive" className='mb-1 px-8 mx-2' onClick={() => { handleDelete(row.getValue("remove")) }}>Delete</Button>
                         </DialogClose>
                     </DialogFooter>
                 </DialogContent>
