@@ -2,17 +2,18 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import './App.css';
 import Footer from './components/Navigation/Footer.tsx';
 import Navbar from './components/Navigation/Navbar.tsx';
+import { Toaster } from "./components/ui/toaster.tsx";
 import './index.css';
 import ErrorPage from './pages/ErrorPage.tsx';
 import HomePage from './pages/Home/HomePage.tsx';
+import IssuesPage from "./pages/Issues/IssuesPage.tsx";
 import LoginPage from './pages/Login/LoginPage.tsx';
 import ScenarioFormPage from './pages/Scenario/ScenarioFormPage.tsx';
 import ScenarioPage from './pages/Scenario/ScenarioPage.tsx';
 import Scenarios from './pages/Scenario/Scenarios.tsx';
-import Transcripts from './pages/Transcripts/Transcripts.tsx';
-import { Toaster } from "./components/ui/toaster.tsx";
-import IssuesPage from "./pages/Issues/IssuesPage.tsx";
 import TranscriptPage from "./pages/Transcripts/TranscriptPage.tsx";
+import Transcripts from './pages/Transcripts/Transcripts.tsx';
+import TranscriptsPage from "./pages/Transcripts/TranscriptsPage.tsx";
 
 
 function App() {
@@ -37,7 +38,7 @@ function AppWithRouting() {
         <Route path="scenarios/add" element={<ScenarioFormPage />} />
         <Route path="scenarios/edit/:id" element={<ScenarioFormPage />} />
         <Route path="scenarios/:id" element={<ScenarioPage />} />
-        <Route path="/transcripts" element={<Transcripts />} />
+        <Route path="/transcripts" element={<TranscriptsPage />} />
         <Route path="/transcripts/:id" element={<TranscriptPage />} />
         <Route path="/issues" element={<IssuesPage />} />
         <Route path="/login" element={<LoginPage />} />
