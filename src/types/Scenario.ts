@@ -1,6 +1,7 @@
 export interface Scenario {
   _id: string;
   id: Number;
+  Theme: string;
   Context: string;
   Name: string;
   Self: boolean;
@@ -15,7 +16,7 @@ export interface Scenario {
   Emotion: string;
   Time: string;
   Outcome: string;
-  Theme: string;
+  AdditionalInfo: string;
   AI: string;
   Model: string;
   TTS: string;

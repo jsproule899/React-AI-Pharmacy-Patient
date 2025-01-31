@@ -14,7 +14,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { toast } from "@/hooks/use-toast";
 import { Issue } from "@/types/issue";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaListCheck, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
 import { Link } from "react-router";
 
@@ -39,12 +39,19 @@ function styleStatusColour(status: string | undefined) {
 function IssuesPage() {
     const [issues, setIssues] = useState<Issue[]>([]);
     const [filtered, setFiltered] = useState<Issue[]>([]);
+    const [filteredAndPaginated, setFilteredAndPaginated] = useState<Issue[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedStatus, setSelectedStatus] = useState("NEW");
     const [filters, setFilters] = useState({
         category: "",
         status: "",
         detail: ""
+    })
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        totalPages: 1,
+        pageSize: 10,
+
     })
 
     const categories = [...new Set(issues?.map(issue => issue.Category))]
@@ -53,7 +60,7 @@ function IssuesPage() {
         try {
             const res = await axios.get(`${import.meta.env.VITE_API_BASEURL}/api/issue`)
             setIssues(res.data);
-           
+            setPagination(prev => ({ ...prev, totalPages: res.data.length / prev.pageSize }))
             setIsLoading(false);
         } catch (error) {
             console.log(error);
@@ -68,38 +75,47 @@ function IssuesPage() {
 
     useEffect(() => {
         fetchIssues();
-     
+
     }, []);
 
+    const filterIssues = useCallback(() => {
+        let filteredIssues = [...issues];
+
+        // Apply filters
+        if (filters.category && filters.category !== "all") {
+            filteredIssues = filteredIssues.filter((issue) => issue.Category === filters.category);
+        }
+        if (filters.detail) {
+            filteredIssues = filteredIssues.filter((issue) =>
+                issue.Details.toLowerCase().includes(filters.detail.toLowerCase())
+            );
+        }
+        if (filters.status && filters.status !== "all") {
+            filteredIssues = filteredIssues.filter((issue) => issue.Status === filters.status);
+        }
+
+        // Update filtered list
+        setFiltered(filteredIssues);
+
+        // Calculate pagination values
+        const totalPages = Math.ceil(filteredIssues.length / pagination.pageSize);
+        setPagination((prev) => ({
+            ...prev,
+            totalPages: totalPages,
+            pageIndex: 0
+        }));
+    }, [filters, issues, pagination.pageSize, setFiltered, setPagination]);
+
     useEffect(() => {
-        
-        const filterIssues = () => {
-            setFiltered(issues);
-            let filteredIssues = [...issues];
-
-            // Apply category filter
-            if (filters.category  && filters.category !== "all") {
-                filteredIssues = filteredIssues.filter((issue) => issue.Category === filters.category);
-            }
-
-            // Apply details filter (case-insensitive)
-            if (filters.detail) {
-                filteredIssues = filteredIssues.filter((issue) =>
-                    issue.Details.toLowerCase().includes(filters.detail.toLowerCase())
-                );
-            }
-
-            // Apply status filter
-            if (filters.status && filters.status !== "all") {
-                filteredIssues = filteredIssues.filter((issue) => issue.Status === filters.status);
-            }
-
-            // Update the filtered state
-            setFiltered(filteredIssues);
-        };
-
         filterIssues();
-    }, [filters, setFiltered, issues])
+    }, [filterIssues]);
+
+    useEffect(() => {
+        const index = pagination.pageIndex * pagination.pageSize;
+        const end = Math.min(index + pagination.pageSize, filtered.length);
+        setFilteredAndPaginated(filtered.slice(index, end));
+    }, [filtered, pagination.pageIndex, pagination.pageSize]);
+
 
 
 
@@ -146,8 +162,8 @@ function IssuesPage() {
     return (
         <div className="flex-grow bg-stone-50 dark:bg-stone-900 ">
             <div className="w-11/12 mx-auto m-4">
-                <div className="flex items-center justify-start py-4 gap-4 ">
-                    <div className="flex items-center gap-2">
+                <div className="flex flex-wrap justify-start py-4 gap-4 ">
+                    <div className="flex flex-col sm:flex-row  items-center gap-2 order-1">
                         <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">Category</p>
                         <Select
                             value={filters.category}
@@ -179,9 +195,9 @@ function IssuesPage() {
                         onChange={(e) =>
                             setFilters((prev) => ({ ...prev, detail: e.target.value }))
                         }
-                        className="max-w-sm"
+                        className="max-w-sm order-3 md:order-2"
                     />
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row  items-center order-2 md:order-3  gap-2">
                         <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">Status</p>
                         <Select
                             value={filters.status}
@@ -190,7 +206,7 @@ function IssuesPage() {
                             }}
                         >
                             <SelectTrigger className="h-8 w-[140px]">
-                                <SelectValue placeholder="Status" />
+                                <SelectValue placeholder="Select" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value={"all"}>
@@ -212,7 +228,7 @@ function IssuesPage() {
 
                 <div className="rounded-md border">
                     <Table>
-                        <TableCaption>{issues.length === 0 ? "No issues logged." : "A list of the logged issues."}</TableCaption>
+                        <TableCaption>{filtered.length === 0 ? "No issues found." : null}</TableCaption>
                         <TableHeader >
                             <TableRow>
                                 <TableHead className="">Issue</TableHead>
@@ -227,13 +243,17 @@ function IssuesPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filtered.map((issue: Issue, index: number) => {
+                            {filteredAndPaginated.map((issue: Issue, index: number) => {
                                 return (
                                     <TableRow key={index} className="text-stone-950 dark:text-stone-50">
-                                        <TableCell className="font-medium">#{index + 1}</TableCell>
+                                        <TableCell className="font-medium">#{issues.indexOf(issue) + 1}</TableCell>
 
                                         <TableCell>{issue.Category}</TableCell>
-                                        <TableCell>{issue.Details}</TableCell>
+                                        <TableCell><p className="overflow-y-clip max-h-20 cursor-pointer" onClick={(e) => {
+                                            let classnames = e.currentTarget.className;
+                                            if (classnames === "") { classnames = "overflow-y-clip max-h-20 cursor-pointer"; } else { classnames = "" };
+                                            e.currentTarget.className = classnames;
+                                        }}>{issue.Details}</p></TableCell>
                                         <TableCell >
                                             <Link to={{ pathname: `/scenarios/edit/${issue.Scenario._id}` }} >
                                                 <FaRegPenToSquare className='h-6 w-6 cursor-pointer justify-self-center' />
@@ -314,6 +334,49 @@ function IssuesPage() {
 
                         </TableBody>
                     </Table>
+
+                </div>
+
+                <div className="flex items-center justify-end gap-2">
+                    <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">Rows</p>
+                    <Select
+                        value={`${pagination.pageSize}`}
+                        onValueChange={(value) => {
+                            setPagination((prev) => ({ ...prev, pageIndex: 0, pageSize: Number(value), totalPages: issues.length / Number(value) }))
+                            setPagination((prev) => ({ ...prev, }))
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-[70px]">
+                            <SelectValue placeholder={pagination.pageSize} />
+                        </SelectTrigger>
+                        <SelectContent side="top">
+                            {[1, 10, 20, 30, 40, 50].map((pageSize) => (
+                                <SelectItem key={pageSize} value={`${pageSize}`}>
+                                    {pageSize}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <div className="space-x-2 my-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPagination(((prev) => ({ ...prev, pageIndex: prev.pageIndex - 1 })))}
+                            disabled={pagination.pageIndex - 1 === -1}
+                        >
+                            Previous
+                        </Button>
+                        <p className="text-xs inline dark:text-stone-50 ">Page: {pagination.pageIndex + 1} of {pagination.totalPages === 0 ? 1 : Math.ceil(pagination.totalPages)}</p>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPagination(((prev) => ({ ...prev, pageIndex: prev.pageIndex + 1 })))}
+                            disabled={pagination.pageIndex + 1 >= pagination.totalPages}
+                        >
+                            Next
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

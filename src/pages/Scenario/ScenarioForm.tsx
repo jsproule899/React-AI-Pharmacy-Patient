@@ -32,7 +32,7 @@ const openAIModels = ["gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest"]
 
 const claudeModels = ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-5-haiku-20241022", "claude-3-5-sonnet-20241022", "claude-3-opus-20240229"]
 
-const deepSeekModels = ["deepseek-chat", "deepseek-reasoner"]
+const deepSeekModels = ["deepseek-chat"]
 
 const voiceProviders = ["Unreal Speech", "Eleven Labs"]
 
@@ -110,6 +110,7 @@ const otherPersonSchema = z.object({
 
 
 const formSchema = z.object({
+    Theme: z.string().max(100).min(1, "Required"),
     Context: z.string().max(250).min(1, "Required"),
     Name: z.string().max(50).min(1, "Required"),
     Age: z.string({
@@ -124,7 +125,9 @@ const formSchema = z.object({
     History: z.string().min(1, "Required"),
     Symptoms: z.string().min(1, "Required"),
     Allergies: z.string().min(1, "Required"),
+    Emotion: z.string(),
     Time: z.string().min(1, "Required"),
+    AdditionalInfo: z.string(),
     Outcome: z.string().min(1, "Required"),
     AI: z.string(),
     Model: z.string(),
@@ -171,6 +174,7 @@ function ScenarioForm() {
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            Theme: "",
             Context: "",
             Self: true,
             Name: "",
@@ -180,7 +184,9 @@ function ScenarioForm() {
             History: "",
             Symptoms: "",
             Allergies: "",
+            Emotion: "",
             Time: "",
+            AdditionalInfo: "",
             Outcome: "Treat",
             Other_Person: {
                 Name: "",
@@ -282,6 +288,20 @@ function ScenarioForm() {
 
         <Form {...form} >
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4 mx-10">
+            <FormField
+                    control={form.control}
+                    name="Theme"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className='text-stone-950 dark:text-stone-50'>Theme</FormLabel>                           
+                            <FormControl>
+                                <Input type="text" className='text-stone-950 dark:text-stone-50' placeholder="Coughs and Colds" {...field} />
+                            </FormControl>
+
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="Context"
@@ -526,6 +546,20 @@ function ScenarioForm() {
                         </FormItem>
                     )}
                 />
+                  <FormField
+                    control={form.control}
+                    name="Emotion"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className='text-stone-950 dark:text-stone-50'>Emotion</FormLabel>
+                            <FormControl>
+                                <Input type="text" placeholder="Optional emotional tone" {...field} />
+                            </FormControl>
+
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="Time"
@@ -534,6 +568,20 @@ function ScenarioForm() {
                             <FormLabel className='text-stone-950 dark:text-stone-50'>Duration of Illness</FormLabel>
                             <FormControl>
                                 <Input type="text" placeholder="3 days" {...field} />
+                            </FormControl>
+
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                  <FormField
+                    control={form.control}
+                    name="AdditionalInfo"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className='text-stone-950 dark:text-stone-50'>Additional Information</FormLabel>
+                            <FormControl>
+                                <Input type="text" placeholder="Optional additional information for prompt" {...field} />
                             </FormControl>
 
                             <FormMessage />
