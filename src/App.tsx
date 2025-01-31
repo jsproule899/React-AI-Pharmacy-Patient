@@ -10,7 +10,7 @@ import IssuesPage from "./pages/Issues/IssuesPage.tsx";
 import LoginPage from './pages/Login/LoginPage.tsx';
 import ScenarioFormPage from './pages/Scenario/ScenarioFormPage.tsx';
 import ScenarioPage from './pages/Scenario/ScenarioPage.tsx';
-import Scenarios from './pages/Scenario/Scenarios.tsx';
+import ScenariosPage from './pages/Scenario/ScenariosPage.tsx';
 import TranscriptPage from "./pages/Transcripts/TranscriptPage.tsx";
 import TranscriptsPage from "./pages/Transcripts/TranscriptsPage.tsx";
 
@@ -33,7 +33,7 @@ function AppWithRouting() {
       <Routes>
         <Route path='*' element={<ErrorPage />} />
         <Route path="/" element={<HomePage />} />
-        <Route path="scenarios" element={<Scenarios />} />
+        <Route path="scenarios" element={<ScenariosPage />} />
         <Route path="scenarios/add" element={<ScenarioFormPage />} />
         <Route path="scenarios/edit/:id" element={<ScenarioFormPage />} />
         <Route path="scenarios/:id" element={<ScenarioPage />} />

@@ -15,7 +15,7 @@ const Navbar = () => {
     const toggleMenu = () => setIsOpen(!isOpen);
 
     return (
-        <header className='p-3 sticky flex justify-between bg-stone-50 dark:bg-stone-900 border-b border-stone-900/10 dark:border-stone-50/10 z-30' 
+        <header className='p-3 sticky flex justify-between bg-stone-50 dark:bg-stone-900 border-b border-stone-900/10 dark:border-stone-50/10 z-30 gap-4' 
     onMouseLeave={ isOpen ? toggleMenu: ()=>{}}>
 
             <a href="/" className=' flex flex-shrink-0 items-center gap-1'>
@@ -47,22 +47,22 @@ const Navbar = () => {
             <div className='hidden md:flex flex-grow '>
                 <nav className='flex-grow space-x-6 p-4 font-bold text-lg '>
                     <NavLink to="/" end className={({ isActive }) =>
-                        isActive ? "text-red-600 text "  : " text-black hover:text-red-600 dark:text-white dark:hover:text-red-600"
+                        isActive ? "text-qub-red"  : " text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red"
                     }>
                         Home
                     </NavLink>
                     <NavLink to="/scenarios" className={({ isActive }) =>
-                        isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
+                        isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
                     }>
                         Scenarios
                     </NavLink>
                     <NavLink to="/transcripts" className={({ isActive }) =>
-                        isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
+                        isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
                     }>
                         Transcripts
                     </NavLink>
                     <NavLink to="/issues" className={({ isActive }) =>
-                        isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
+                        isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
                     }>
                         Issues
                     </NavLink>
@@ -90,22 +90,22 @@ const Navbar = () => {
                 <div className='flex flex-wrap space-x-6 p-4 font-bold '>
                     <nav className='block md:flex space-x-6 p-4 font-bold '>
                         <NavLink to="/" end className={({ isActive }) =>
-                            isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600"
+                            isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red"
                         } onClick={toggleMenu}>
                             Home
                         </NavLink>
                         <NavLink to="/scenarios" className={({ isActive }) =>
-                            isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
+                            isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
                         } onClick={toggleMenu}>
                             Scenarios
                         </NavLink>
                         <NavLink to="/transcripts" className={({ isActive }) =>
-                            isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
+                            isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
                         } onClick={toggleMenu}>
                             Transcripts
                         </NavLink>
                         <NavLink to="/issues" className={({ isActive }) =>
-                        isActive ? "text-red-600" : "text-black hover:text-red-600 dark:text-white dark:hover:text-red-600 "
+                        isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
                     } onClick={toggleMenu}>
                         Issues
                     </NavLink>

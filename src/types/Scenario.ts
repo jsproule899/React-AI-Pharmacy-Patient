@@ -12,8 +12,10 @@ export interface Scenario {
   History: string;
   Symptoms: string;
   Allergies: string;
+  Emotion: string;
   Time: string;
   Outcome: string;
+  Theme: string;
   AI: string;
   Model: string;
   TTS: string;

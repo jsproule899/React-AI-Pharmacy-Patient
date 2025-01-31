@@ -62,7 +62,7 @@ export function TranscriptTable<TData, TValue>({
         {
             id: "createdAt",
             desc: true,
-          },
+        },
     ])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
         []
@@ -105,26 +105,7 @@ export function TranscriptTable<TData, TValue>({
                         }
                         className="max-w-sm"
                     />
-                    <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">Rows</p>
-                        <Select
-                            value={`${table.getState().pagination.pageSize}`}
-                            onValueChange={(value) => {
-                                table.setPageSize(Number(value))
-                            }}
-                        >
-                            <SelectTrigger className="h-8 w-[70px]">
-                                <SelectValue placeholder={table.getState().pagination.pageSize} />
-                            </SelectTrigger>
-                            <SelectContent side="top">
-                                {[1, 10, 20, 30, 40, 50].map((pageSize) => (
-                                    <SelectItem key={pageSize} value={`${pageSize}`}>
-                                        {pageSize}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+
                 </div>
 
                 <div className="rounded-md border">
@@ -182,23 +163,48 @@ export function TranscriptTable<TData, TValue>({
                         {table.getFilteredRowModel().rows.length} of{" "}
                         {data.length} row(s) shown.
                     </div>
-                    <div className="space-x-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            Next
-                        </Button>
+
+                    <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">Rows</p>
+                            <Select
+                                value={`${table.getState().pagination.pageSize}`}
+                                onValueChange={(value) => {
+                                    table.setPageSize(Number(value))
+                                }}
+                            >
+                                <SelectTrigger className="h-8 w-[70px]">
+                                    <SelectValue placeholder={table.getState().pagination.pageSize} />
+                                </SelectTrigger>
+                                <SelectContent side="top">
+                                    {[1, 10, 20, 30, 40, 50].map((pageSize) => (
+                                        <SelectItem key={pageSize} value={`${pageSize}`}>
+                                            {pageSize}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-x-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => table.previousPage()}
+                                disabled={!table.getCanPreviousPage()}
+                            >
+                                Previous
+                            </Button>
+                            <p className="text-xs inline dark:text-stone-50 ">Page: {table.options.state.pagination?.pageIndex ? table.options.state.pagination?.pageIndex : 1} of {table.getPageCount()}</p>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => table.nextPage()}
+                                disabled={!table.getCanNextPage()}
+                            >
+                                Next
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

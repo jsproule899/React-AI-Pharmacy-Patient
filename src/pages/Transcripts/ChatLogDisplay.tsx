@@ -231,7 +231,7 @@ const ChatLogDisplay = () => {
                                     )}
                                     {message.includes("Pharmacist:") && (
                                         <div className="ml-auto max-w-96 mb-2 ">
-                                            <div className="bg-red-400 dark:bg-red-900 p-2 rounded-lg shadow-sm text-gray-950 mr-auto dark:text-stone-200">
+                                            <div className="bg-red-400 dark:bg-qub-darkred p-2 rounded-lg shadow-sm text-gray-950 mr-auto dark:text-stone-200">
                                                 <p className='text-xs text-gray-950/80 dark:text-stone-200/80'>Pharmacist</p>
                                                 {message.replace("Pharmacist:", "")}
                                             </div>

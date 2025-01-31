@@ -27,6 +27,7 @@ import { Scenario } from "@/types/Scenario";
 import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router';
+import { Badge } from "@/components/ui/badge";
 
 
 
@@ -107,7 +108,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
       await axios.delete(`${import.meta.env.VITE_API_BASEURL}/api/scenario/${scenario._id}`);
       console.log(`Scenario ${scenario._id} deleted`);
       onScenarioDeleted(); // Trigger the callback to re-fetch scenarios
-      setIsDeleteDialogOpen(false); // Close the dialog after deletion
+      setIsDeleteDialogOpen(false); 
     } catch (error) {
       console.error("Error deleting scenario:", error);
     }
@@ -116,7 +117,8 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
   return (
     <Card className='inline-block m-4 '>
       <CardHeader className='relative text-xl m-a'>
-        <CardTitle>{scenario.Name}</CardTitle>
+        <CardTitle className="mb-1">{scenario.Name}</CardTitle>
+        <Badge className="w-fit">{scenario.Theme}</Badge>        
         <Link to={{ pathname: "/scenarios/" + scenario._id }} className=" absolute top-4 right-8 z-10 p-1" ><FaCirclePlay className='w-12 h-12  text-red-600 hover:text-red-900 dark:hover:text-red-50 ' /></Link>
         <div className=" md:flex justify-center relative overflow-hidden rounded-lg">
           <img src={`/img/avatar_${scenario.Avatar}.png`} alt="Image" className="rounded-lg object-cover h-96" />

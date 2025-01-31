@@ -3,17 +3,17 @@ import { Link } from "react-router";
 
 function HomePage() {
     return (
-        <div className="flex-grow bg-stone-50 dark:bg-stone-900">
+        <div className="flex-grow bg-stone-50 dark:bg-stone-900 font-brandon">
 
-            <section className="bg-[url(assets/Hero.png)] bg-cover text-white py-24 md:min-h-[calc(100dvh-5rem)]">
-                <div className=" flex flex-col text-left md:mx-28 mx-4 w-fit">
-                    <h1 className="text-2xl md:text-6xl font-semibold text-stone-900 bg-white w-fit p-3">Welcome to QAIRx</h1>
-                    <p className="text-sm max-w-44 md:max-w-none md:text-xl mb-4  bg-stone-900 p-3 w-fit">
+            <section className="bg-[url(assets/Hero.jpg)] bg-center bg-cover text-white mx-auto min-h-[calc(100dvh-5rem)]">
+                <div className="flex flex-col flex-grow items-center md:items-start md:mx-44 mx-4 w-fit">
+                    <h1 className=" text-4xl lg:text-6xl font-semibold text-stone-900 bg-white w-fit p-3 mt-[calc(50dvh-5rem)]">QAIRx Platform</h1>
+                    <p className=" max-w-lg md:max-w-none text-lg lg:text-xl mb-4  bg-stone-900 p-3 w-fit">
                         Enhance your pharmacy education through AI-driven roleplays and
                         simulations.
                     </p>
                     <Link to='/scenarios' className="">
-                        <Button variant="primary" className="md:mx-60 mt-4" size={"responsive"}>
+                        <Button variant="primary" className=" mt-8" size={"lg"}>
                             Get Started
                         </Button>
                     </Link>
@@ -72,8 +72,8 @@ function HomePage() {
                 </div>
             </section>
 
-            <section className="bg-[url(assets/Capsules.jpg)] bg-cover text-center py-36">
-                <h2 className="text-3xl font-bold mb-8 text-stone-900">
+            <section className="bg-[linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.6)),url(assets/Capsules.jpg)] bg-cover bg-center text-center py-36 " >
+                <h2 className="text-3xl font-bold mb-8 text-stone-50">
                     Start Your AI Pharmacy Education Journey Today!
                 </h2>
                 <Link to='/login'>

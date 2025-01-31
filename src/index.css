@@ -5,4 +5,19 @@
   :root {
     --radius: 0.5rem
   }
+
+  html {
+    @apply scroll-smooth;
+    @apply font-brandon;
 }
+}
+
+
+
+@layer utilities {
+ 
+}
+
+
+
+

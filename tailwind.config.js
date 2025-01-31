@@ -7,6 +7,11 @@ export default {
   ],
   theme: {
   	extend: {
+      fontFamily: {
+
+        'brandon': ['Brandon', 'sans-serif']
+
+    },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
@@ -14,6 +19,12 @@ export default {
   		},
   		colors: {
         'qub-red': '#D6000D',
+        'qub-darkred': '#8F0E20',
+        'qub-darkgrey': '#2F2F2F',
+        'qub-grey': '#4A4A4A',
+        'qub-lightgrey': '#9B9B9B'
+
+
       }
   	}
   },
