@@ -15,8 +15,8 @@ const Navbar = () => {
     const toggleMenu = () => setIsOpen(!isOpen);
 
     return (
-        <header className='p-3 sticky flex justify-between bg-stone-50 dark:bg-stone-900 border-b border-stone-900/10 dark:border-stone-50/10 z-30 gap-4' 
-    onMouseLeave={ isOpen ? toggleMenu: ()=>{}}>
+        <header className='p-3 sticky flex justify-between bg-stone-50 dark:bg-stone-900 border-b border-stone-900/10 dark:border-stone-50/10 z-30 gap-4'
+            onMouseLeave={isOpen ? toggleMenu : () => { }}>
 
             <a href="/" className=' flex flex-shrink-0 items-center gap-1'>
                 <img className='h-14 w-auto' src={theme == 'dark' ? logoDark : logo} alt="" />
@@ -42,12 +42,12 @@ const Navbar = () => {
 
             </button>
 
-            {/* Navbar Links (Visible on medium screens) */}
+            {/* Navbar Links (Visible on large screens) */}
 
-            <div className='hidden md:flex flex-grow '>
-                <nav className='flex-grow space-x-6 p-4 font-bold text-lg '>
+            <div className='hidden md:flex flex-grow'>
+                <nav className='flex-grow space-x-4 lg:space-x-6 p-4 font-bold text-md '>
                     <NavLink to="/" end className={({ isActive }) =>
-                        isActive ? "text-qub-red"  : " text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red"
+                        isActive ? "text-qub-red" : " text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red"
                     }>
                         Home
                     </NavLink>
@@ -86,9 +86,9 @@ const Navbar = () => {
             <div
                 className={`md:hidden absolute left-0 top-20 w-full z-20 bg-stone-50 dark:bg-stone-900 shadow-md transition-all duration-300 ${isOpen ? "block" : "hidden"
                     }`}
-                 >
-                <div className='flex flex-wrap space-x-6 p-4 font-bold '>
-                    <nav className='block md:flex space-x-6 p-4 font-bold '>
+            >
+                <div className='flex flex-col sm:flex-row text-center justify-between p-4 font-bold  gap-2'>
+                    <nav className='flex flex-col sm:space-x-6 sm:flex-row text-left text-2xl sm:text-lg font-bold gap-2 mx-4 '>
                         <NavLink to="/" end className={({ isActive }) =>
                             isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red"
                         } onClick={toggleMenu}>
@@ -105,24 +105,19 @@ const Navbar = () => {
                             Transcripts
                         </NavLink>
                         <NavLink to="/issues" className={({ isActive }) =>
-                        isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
-                    } onClick={toggleMenu}>
-                        Issues
-                    </NavLink>
+                            isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
+                        } onClick={toggleMenu}>
+                            Issues
+                        </NavLink>
                     </nav>
 
-                    <div className='flex justify-between self-center mx-3'>
-
+                    <div className='flex justify-end gap-2'>
                         <Link to='/login' onClick={toggleMenu}>
                             <Button>
                                 Log in
                             </Button>
                         </Link>
 
-
-                    </div>
-
-                    <div className="flex flex-end self-center mx-1">
                         <ModeToggle />
                     </div>
                 </div>

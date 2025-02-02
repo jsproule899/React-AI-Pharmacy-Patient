@@ -19,7 +19,7 @@ const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 const CardSkeleton = () => {
     return (
 
-        <div className='flex justify-start flex-wrap'>
+        <div className='flex justify-start flex-wrap mb-16'> 
             {
                 numbers.map((key) => {
                     return <ScenarioCardSkeleton key={key} />

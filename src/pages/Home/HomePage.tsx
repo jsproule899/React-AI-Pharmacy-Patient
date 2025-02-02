@@ -5,9 +5,9 @@ function HomePage() {
     return (
         <div className="flex-grow bg-stone-50 dark:bg-stone-900 font-brandon">
 
-            <section className="bg-[url(assets/Hero.jpg)] bg-center bg-cover text-white mx-auto min-h-[calc(100dvh-5rem)]">
+            <section className="bg-[url(assets/Hero.jpg)] bg-fixed bg-center bg-cover text-white mx-auto min-h-[calc(100svh-5rem)]">
                 <div className="flex flex-col flex-grow items-center md:items-start md:mx-44 mx-4 w-fit">
-                    <h1 className=" text-4xl lg:text-6xl font-semibold text-stone-900 bg-white w-fit p-3 mt-[calc(50dvh-5rem)]">QAIRx Platform</h1>
+                    <h1 className=" text-4xl lg:text-6xl font-semibold text-stone-900 bg-white w-fit p-3 mt-[calc(50svh-5rem)]">QAIRx Platform</h1>
                     <p className=" max-w-lg md:max-w-none text-lg lg:text-xl mb-4  bg-stone-900 p-3 w-fit">
                         Enhance your pharmacy education through AI-driven roleplays and
                         simulations.

@@ -146,7 +146,7 @@ function ScenariosPage() {
 
 
     return (
-        <div className="flex-grow bg-stone-50 dark:bg-stone-900 relative">
+        <div className="flex-grow bg-stone-50 dark:bg-stone-900 ">
             <ScenariosHeader props={{ themes, filters, setFilters }} />
             {
                 isLoading ? <CardSkeleton /> :
@@ -162,11 +162,14 @@ function ScenariosPage() {
                                 one or try again later.</h2>
                         </div>
                         :
-                        filteredAndPaginated.map((scenario, index) => {
-                            return <ScenarioCard key={index} scenario={scenario} onScenarioDeleted={fetchScenarios} />
-                        })}
+                        <div className='flex flex-wrap mb-16'>
+                            {filteredAndPaginated.map((scenario, index) => {
+                                return <ScenarioCard key={index} scenario={scenario} onScenarioDeleted={fetchScenarios} />
+                            })}
+                        </div>
+            }
 
-            <div className="flex flex-grow items-center justify-center gap-2 absolute bottom-4 left-0 right-0">
+            <div className="flex flex-grow items-center justify-center gap-2 absolute bottom-16 left-0 right-0">
                 <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">Rows</p>
                 <Select
                     value={`${pagination.pageSize}`}

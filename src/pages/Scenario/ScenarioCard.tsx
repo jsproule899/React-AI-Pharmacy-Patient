@@ -115,7 +115,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
   };
 
   return (
-    <Card className='inline-block m-4 '>
+    <Card className='inline-block m-4  '>
       <CardHeader className='relative text-xl m-a'>
         <CardTitle className="mb-1">{scenario.Name}</CardTitle>
         <Badge className="w-fit">{scenario.Theme}</Badge>        
@@ -125,7 +125,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-stone-800 from-2% to-30%" />
         </div>
 
-        <CardDescription className="max-w-96 h-8 text-base">{scenario.Context}</CardDescription>
+        <CardDescription className="max-w-96 h-12 text-base overflow-hidden text-ellipsis line-clamp-2">{scenario.Context}</CardDescription>
       </CardHeader>
 
       <CardFooter className='text-sm self-end flex flex-grow justify-between '>

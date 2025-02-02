@@ -17,10 +17,11 @@ function ScenarioPage() {
     const { unityProvider, isLoaded, UNSAFE__unityInstance, requestFullscreen, sendMessage, addEventListener, removeEventListener } = useUnityContext({
 
         loaderUrl: "/unity/Build/Build.loader.js",
-        dataUrl: "/unity/Build/Build.data",
-        frameworkUrl: "/unity/Build/Build.framework.js",
-        codeUrl: "/unity/Build/Build.wasm",
+        dataUrl: "/unity/Build/Build.data.unityweb",
+        frameworkUrl: "/unity/Build/Build.framework.js.unityweb",
+        codeUrl: "/unity/Build/Build.wasm.unityweb",
         streamingAssetsUrl: '/unity/StreamingAssets',
+       
     });
 
     const handleTranscriptUpload = useCallback((filename: string, data: string) => {
@@ -96,7 +97,7 @@ function ScenarioPage() {
             )}
             <div className="flex-grow flex justify-center items-center bg-stone-50 dark:bg-stone-900 relative" style={{ display: isLoaded ? "flex" : "none" }}>
                 <Unity unityProvider={unityProvider} devicePixelRatio={window.devicePixelRatio} className={`w-full ${isEmbeddedRoute ? 'h-dvh' : 'h-[calc(100dvh-5rem)]'}`} tabIndex={1} />
-                <button onClick={handleFullscreen}><FaExpand className="w-8 h-8 m-1 text-white hover:scale-110 transition-transform absolute bottom-0 right-0 z-50" /></button>
+                <button onClick={handleFullscreen}><FaExpand className="w-6 h-6 m-1 text-white hover:scale-110 transition-transform absolute bottom-0 right-0 z-50" /></button>
             </div>
 
         </>
