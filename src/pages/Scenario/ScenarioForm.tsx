@@ -118,21 +118,23 @@ const formSchema = z.object({
         invalid_type_error: "Age must be a number between 1-110",
     }).min(1, "Required"),
     Gender: z.string().min(1, "Required"),
-    Self: z.boolean(),
+    Self: z.boolean().optional(),
     Other_Person: otherPersonSchema,
+    Pregnant: z.boolean().optional(),
+    Breastfeeding: z.boolean().optional(),
     Medicines: z.string().min(1, "Required"),
     AdditionalMeds: z.string().min(1, "Required"),
+    Time: z.string().min(1, "Required"),
     History: z.string().min(1, "Required"),
     Symptoms: z.string().min(1, "Required"),
     Allergies: z.string().min(1, "Required"),
-    Emotion: z.string(),
-    Time: z.string().min(1, "Required"),
-    AdditionalInfo: z.string(),
+    Emotion: z.string().optional(),
+    AdditionalInfo: z.string().optional(),
     Outcome: z.string().min(1, "Required"),
-    AI: z.string(),
-    Model: z.string(),
-    TTS: z.string(),
-    Voice: z.string(),
+    AI: z.string().min(1, "Required"),
+    Model: z.string().min(1, "Required"),
+    TTS: z.string().min(1, "Required"),
+    Voice: z.string().min(1, "Required"),
 }).superRefine(
     ({ Self, Other_Person }, refinementContext) => {
         if (!Self && Other_Person) {
@@ -176,25 +178,26 @@ function ScenarioForm() {
         defaultValues: {
             Theme: "",
             Context: "",
-            Self: true,
             Name: "",
             Age: "",
-            Medicines: "",
-            AdditionalMeds: "",
-            History: "",
-            Symptoms: "",
-            Allergies: "",
-            Emotion: "",
-            Time: "",
-            AdditionalInfo: "",
-            Outcome: "Treat",
+            Self: true,
             Other_Person: {
                 Name: "",
                 Age: "",
                 Gender: "",
                 Relationship: ""
-            }
-
+            },
+            Pregnant: false,
+            Breastfeeding: false,
+            Medicines: "",
+            AdditionalMeds: "",
+            Time: "",
+            History: "",
+            Symptoms: "",
+            Allergies: "",
+            Emotion: "",
+            AdditionalInfo: "",
+            Outcome: "Treat",
         },
     })
 
@@ -217,7 +220,7 @@ function ScenarioForm() {
                     console.error("Error fetching scenario data", error);
                 });
         }
-    }, [id, form]);
+    }, [id]);
 
 
 
@@ -227,7 +230,13 @@ function ScenarioForm() {
         try {
             if (id) {
                 // Update the existing scenario
-                axios.put(`${import.meta.env.VITE_API_BASEURL}/api/scenario/${id}`, values);
+                axios.put(`${import.meta.env.VITE_API_BASEURL}/api/scenario/${id}`, values).then((res) => {
+                    if (res.status.toString().startsWith("20")) {
+                        toast({
+                            description: "Scenario successfully updated."
+                        })
+                    }
+                });
                 toast({
                     description: "Scenario updating..."
                 })
@@ -237,9 +246,15 @@ function ScenarioForm() {
                     headers: {
                         'content-type': 'application/x-www-form-urlencoded'
                     }
+                }).then((res) => {
+                    if (res.status.toString().startsWith("20")) {
+                        toast({
+                            description: "Scenario successfully added."
+                        })
+                    }
                 })
                 toast({
-                    description: "Adding Scenario"
+                    description: "Adding Scenario..."
                 })
 
             }
@@ -274,7 +289,7 @@ function ScenarioForm() {
         } else if (AIProvider === AIProviders[2]) {
             return deepSeekModels;
         } else {
-            return []; // Default to an empty array if no provider is selected
+            return ["Select Provider"]; // Default to an empty array if no provider is selected
         }
     };
 
@@ -287,15 +302,15 @@ function ScenarioForm() {
 
 
         <Form {...form} >
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4 mx-10">
-            <FormField
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4 mx-10 mb-4">
+                <FormField
                     control={form.control}
                     name="Theme"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Theme</FormLabel>                           
+                            <FormLabel>Theme</FormLabel>
                             <FormControl>
-                                <Input type="text" className='text-stone-950 dark:text-stone-50' placeholder="Coughs and Colds" {...field} />
+                                <Input type="text" placeholder="Coughs & Colds" {...field} />
                             </FormControl>
 
                             <FormMessage />
@@ -307,25 +322,25 @@ function ScenarioForm() {
                     name="Context"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Scenario Context</FormLabel>
+                            <FormLabel>Scenario Context</FormLabel>
                             <FormDescription>
                                 This is the single sentence statement for the scenario.
                             </FormDescription>
                             <FormControl>
-                                <Input type="text" className='text-stone-950 dark:text-stone-50' placeholder="Miss Richardson would like 'something good' to get rid of the flu." {...field} />
+                                <Input type="text" placeholder="Miss Richardson would like 'something good' to get rid of the flu." {...field} />
                             </FormControl>
 
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <div className='flex'>
+                <div className='flex flex-wrap gap-2'>
                     <FormField
                         control={form.control}
                         name="Name"
                         render={({ field }) => (
-                            <FormItem className='mr-2'>
-                                <FormLabel className='text-stone-950 dark:text-stone-50' >Name</FormLabel>
+                            <FormItem>
+                                <FormLabel >Name</FormLabel>
                                 <FormControl>
                                     <Input className=" lg:w-96" placeholder="John Doe..." {...field} />
                                 </FormControl>
@@ -339,10 +354,10 @@ function ScenarioForm() {
                         control={form.control}
                         name="Age"
                         render={({ field }) => (
-                            <FormItem className='mr-2'>
-                                <FormLabel className='text-stone-950 dark:text-stone-50'>Age</FormLabel>
+                            <FormItem>
+                                <FormLabel>Age</FormLabel>
                                 <FormControl>
-                                    <Input type="number" className='lg:w-16 text-stone-950 dark:text-stone-50' min="1" max="120" placeholder="18" {...field} />
+                                    <Input type="number" className='w-20 ' min="1" max="120" placeholder="18" {...field} />
                                 </FormControl>
 
                                 <FormMessage />
@@ -355,17 +370,20 @@ function ScenarioForm() {
                         name="Gender"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className='text-stone-950 dark:text-stone-50' >Gender</FormLabel>
+                                <FormLabel >Gender</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="w-[100px] text-stone-950 dark:text-stone-50">
-                                            <SelectValue className='text-stone-950 dark:text-stone-50' placeholder="Gender" />
+                                        <SelectTrigger className="w-[140px] ">
+                                            <SelectValue placeholder="Select" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
 
-                                        <SelectItem className='text-stone-950 dark:text-stone-50' value="Male">Male</SelectItem>
-                                        <SelectItem className='text-stone-950 dark:text-stone-50' value="Female">Female</SelectItem>
+                                        <SelectItem value="Male">Male</SelectItem>
+                                        <SelectItem value="Female">Female</SelectItem>
+                                        <SelectItem value="Trans-Male">Trans-Male</SelectItem>
+                                        <SelectItem value="Trans-Female">Trans-Female</SelectItem>
+                                        <SelectItem value="Non-Binary">Non-Binary</SelectItem>
                                     </SelectContent>
                                 </Select>
 
@@ -375,114 +393,166 @@ function ScenarioForm() {
                         )}
                     />
                 </div>
-                <FormField
-                    control={form.control}
-                    name="Self"
-                    render={({ field }) => (
-                        <FormItem className=" w-64 flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-                            <FormControl>
-                                <Checkbox
-                                    checked={field.value ?? true}
-                                    onCheckedChange={(value) => { field.onChange(value); setpatientIsSelf(!patientIsSelf) }}
-                                />
-                            </FormControl>
-                            <div className="space-y-1 leading-none ">
-                                <FormLabel className='text-stone-950 dark:text-stone-50'>
-                                    They are the patient?
-                                </FormLabel>
 
-                            </div>
-                        </FormItem>
-                    )}
-                />
+                <div className='flex flex-shrink flex-col flex-start w-fit items-start rounded-md border bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 p-4 shadow'>
+                    <FormField
+                        control={form.control}
+                        name="Self"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormControl>
+                                    <Checkbox
+                                        checked={field.value ?? true}
+                                        onCheckedChange={(value) => { field.onChange(value); setpatientIsSelf(!patientIsSelf) }}
+                                    />
+                                </FormControl>
+                                <div className="space-y-1 leading-none  pr-24">
+                                    <FormLabel>
+                                        Visiting for self?
+                                    </FormLabel>
 
-                {!patientIsSelf && (
-                    <div className='flex flex-col flex-start items-start rounded-md border p-4 shadow'>
-                        <FormLabel className='text-stone-950 dark:text-stone-50 mb-1' >Patients Details</FormLabel>
-                        <div className='flex flex-row mb-2'>
+                                </div>
+                            </FormItem>
+                        )}
+                    />
 
-                            <FormField
-                                control={form.control}
-                                name='Other_Person.Name'
-                                render={({ field }) => (
-                                    <FormItem className='mr-2'>
-                                        <FormLabel className='text-stone-950 dark:text-stone-50' >Name</FormLabel>
-                                        <FormControl>
-                                            <Input className=" lg:w-96" placeholder="John Doe..." {...field} />
-                                        </FormControl>
 
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                    {!patientIsSelf && (
+                        <>
+                            <FormLabel className='flex mt-4 mb-1' >Patient Details</FormLabel>
 
-                            <FormField
-                                control={form.control}
-                                name="Other_Person.Age"
-                                render={({ field }) => (
-                                    <FormItem className='mr-2'>
-                                        <FormLabel className='text-stone-950 dark:text-stone-50'>Age</FormLabel>
-                                        <FormControl>
-                                            <Input type="number" className='lg:w-16 text-stone-950 dark:text-stone-50' min="1" max="120" placeholder="18" {...field} />
-                                        </FormControl>
-
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="Other_Person.Gender"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className='text-stone-950 dark:text-stone-50' >Gender</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <div className='flex flex-wrap gap-2'>
+                                <FormField
+                                    control={form.control}
+                                    name='Other_Person.Name'
+                                    render={({ field }) => (
+                                        <FormItem className='mr-2'>
+                                            <FormLabel >Name</FormLabel>
                                             <FormControl>
-                                                <SelectTrigger className="w-[100px] text-stone-950 dark:text-stone-50">
-                                                    <SelectValue className='text-stone-950 dark:text-stone-50' placeholder="Gender" />
-                                                </SelectTrigger>
+                                                <Input className=" lg:w-96" placeholder="John Doe..." {...field} />
                                             </FormControl>
-                                            <SelectContent>
 
-                                                <SelectItem className='text-stone-950 dark:text-stone-50' value="Male">Male</SelectItem>
-                                                <SelectItem className='text-stone-950 dark:text-stone-50' value="Female">Female</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="Other_Person.Age"
+                                    render={({ field }) => (
+                                        <FormItem className='mr-2'>
+                                            <FormLabel>Age</FormLabel>
+                                            <FormControl>
+                                                <Input type="number" className='w-20 ' min="1" max="120" placeholder="18" {...field} />
+                                            </FormControl>
+
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="Other_Person.Gender"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel >Gender</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger className="w-[140px] ">
+                                                        <SelectValue placeholder="Gender" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+
+                                                    <SelectItem value="Male">Male</SelectItem>
+                                                    <SelectItem value="Female">Female</SelectItem>
+                                                    <SelectItem value="Trans-Male">Trans-Male</SelectItem>
+                                                    <SelectItem value="Trans-Female">Trans-Female</SelectItem>
+                                                    <SelectItem value="Non-Binary">Non-Binary</SelectItem>
+                                                </SelectContent>
+                                            </Select>
 
 
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className='flex-row'><FormField
-                            control={form.control}
-                            name="Other_Person.Relationship"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className='text-stone-950 dark:text-stone-50' >Relationship to Patient</FormLabel>
-                                    <FormControl>
-                                        <Input className=" lg:w-96" placeholder="Son..." {...field} />
-                                    </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="Other_Person.Relationship"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel >Relationship to Patient</FormLabel>
+                                            <FormControl>
+                                                <Input className=" lg:w-96" placeholder="Son..." {...field} />
+                                            </FormControl>
 
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        /></div>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </>
+                    )}
+                </div>
+
+                <div className='flex flex-wrap flex-start w-fit gap-4 items-start rounded-md border bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 p-4 shadow'>
+                    <FormField
+                        control={form.control}
+                        name="Pregnant"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 ">
+                                <div className="space-y-1 leading-none ">
+                                    <FormLabel>
+                                        Pregnant?
+                                    </FormLabel>
+
+                                </div>
+                                <FormControl>
+                                    <Checkbox
+                                        checked={field.value ?? false}
+                                        onCheckedChange={(value) => { field.onChange(value); }}
+                                    />
+                                </FormControl>
+
+                            </FormItem>
+                        )}
+                    />
+                    <Label className="space-y-1 leading-none "> or</Label>
 
 
-                    </div>
-                )}
+                    <FormField
+                        control={form.control}
+                        name="Breastfeeding"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 ">
+                                <div className="space-y-1 leading-none ">
+                                    <FormLabel>
+                                        Breastfeeding?
+                                    </FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Checkbox
+                                        checked={field.value ?? false}
+                                        onCheckedChange={(value) => { field.onChange(value); }}
+                                    />
+                                </FormControl>
+
+                            </FormItem>
+                        )}
+                    />
+                </div>
 
                 <FormField
                     control={form.control}
                     name="Medicines"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Medicines</FormLabel>
+                            <FormLabel>Medicines or Medical Conditions</FormLabel>
                             <FormControl>
-                                <Textarea className="resize-none text-stone-950 dark:text-stone-50" placeholder="Paracetamol" {...field} />
+                                <Textarea className="resize-y " placeholder="Paracetamol" {...field} />
                             </FormControl>
 
                             <FormMessage />
@@ -495,9 +565,24 @@ function ScenarioForm() {
                     name='AdditionalMeds'
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Additional Medication</FormLabel>
+                            <FormLabel>Extra Medication</FormLabel>
                             <FormControl>
                                 <Input type="text" placeholder="Wifes antibiotic" {...field} />
+                            </FormControl>
+
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="Time"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Time persisting</FormLabel>
+                            <FormControl>
+                                <Input type="text" placeholder="3 days" {...field} />
                             </FormControl>
 
                             <FormMessage />
@@ -509,9 +594,9 @@ function ScenarioForm() {
                     name="History"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>History</FormLabel>
+                            <FormLabel>History</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="woke up feeling awful" {...field} />
+                                <Textarea className="resize-y" placeholder="woke up feeling awful" {...field} />
                             </FormControl>
 
                             <FormMessage />
@@ -523,7 +608,7 @@ function ScenarioForm() {
                     name="Symptoms"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Patients Symptoms</FormLabel>
+                            <FormLabel>Symptoms</FormLabel>
                             <FormControl>
                                 <Input type="text" placeholder="cough..." {...field} />
                             </FormControl>
@@ -532,26 +617,27 @@ function ScenarioForm() {
                         </FormItem>
                     )}
                 />
+
                 <FormField
                     control={form.control}
                     name="Allergies"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Patients Allergies</FormLabel>
+                            <FormLabel>Allergies or Intolerances</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="No allergies" {...field} />
+                                <Input type="text" placeholder="No allergies or intolerances" {...field} />
                             </FormControl>
 
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                  <FormField
+                <FormField
                     control={form.control}
                     name="Emotion"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Emotion</FormLabel>
+                            <FormLabel>Emotion</FormLabel>
                             <FormControl>
                                 <Input type="text" placeholder="Optional emotional tone" {...field} />
                             </FormControl>
@@ -560,28 +646,15 @@ function ScenarioForm() {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="Time"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Duration of Illness</FormLabel>
-                            <FormControl>
-                                <Input type="text" placeholder="3 days" {...field} />
-                            </FormControl>
 
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                  <FormField
+                <FormField
                     control={form.control}
                     name="AdditionalInfo"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Additional Information</FormLabel>
+                            <FormLabel>Additional Information</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="Optional additional information for prompt" {...field} />
+                                <Textarea className="resize-y " placeholder="Optional additional information for prompt" {...field} />
                             </FormControl>
 
                             <FormMessage />
@@ -594,17 +667,17 @@ function ScenarioForm() {
                     name="Outcome"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className='text-stone-950 dark:text-stone-50'>Correct Outcome</FormLabel>
+                            <FormLabel>Correct Outcome</FormLabel>
                             <FormControl>
                                 <RadioGroup defaultValue="Treat" onValueChange={field.onChange}
                                     className='flex flex-row'>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="Treat" id="Treat" />
-                                        <Label className='text-stone-950 dark:text-stone-50' htmlFor="Treat">Treat</Label>
+                                        <Label htmlFor="Treat">Treat</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="Refer" id="Refer" />
-                                        <Label className='text-stone-950 dark:text-stone-50' htmlFor="Refer">Refer</Label>
+                                        <Label htmlFor="Refer">Refer</Label>
                                     </div>
                                 </RadioGroup></FormControl>
 
@@ -619,16 +692,16 @@ function ScenarioForm() {
                         name="AI"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className='text-stone-950 dark:text-stone-50' >AI Provider</FormLabel>
-                                <Select onValueChange={(value) => { setAIProvider(value); form.resetField("Model"); field.onChange(value) }} defaultValue={field.value}>
+                                <FormLabel >AI Provider</FormLabel>
+                                <Select onValueChange={(value) => { setAIProvider(value); form.setValue("Model", ""); field.onChange(value) }} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="min-w-[100px] text-stone-950 dark:text-stone-50">
-                                            <SelectValue className='text-stone-950 dark:text-stone-50' placeholder="AI" />
+                                        <SelectTrigger className="min-w-[100px] ">
+                                            <SelectValue placeholder="AI" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         {AIProviders.map((ai, i) => {
-                                            return <SelectItem key={i} className='text-stone-950 dark:text-stone-50' value={ai}>{ai}</SelectItem>
+                                            return <SelectItem key={i} value={ai}>{ai}</SelectItem>
                                         }
                                         )}
                                     </SelectContent>
@@ -644,17 +717,17 @@ function ScenarioForm() {
                         name="Model"
                         render={({ field }) => (
                             <FormItem className='my-2 sm:mx-2 sm:my-0'>
-                                <FormLabel className='text-stone-950 dark:text-stone-50' >AI Model</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormLabel >AI Model</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="min-w-[180px]  text-stone-950 dark:text-stone-50">
+                                        <SelectTrigger className="min-w-[180px]">
                                             <SelectValue placeholder="Model" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         <SelectContent>
                                             {renderModelOptions().map((v, i) => {
-                                                return <SelectItem key={i} id={"voice-" + i} className='text-stone-950 dark:text-stone-50' value={v}>{v}</SelectItem>
+                                                return <SelectItem key={i} id={"voice-" + i} value={v}>{v}</SelectItem>
                                             })}
                                         </SelectContent>
                                     </SelectContent>
@@ -673,16 +746,16 @@ function ScenarioForm() {
                         name="TTS"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className='text-stone-950 dark:text-stone-50' >AI Voice Provider</FormLabel>
-                                <Select onValueChange={(value) => { setVoiceProvider(value); form.resetField("Voice"); field.onChange(value) }} defaultValue={field.value}>
+                                <FormLabel >AI Voice Provider</FormLabel>
+                                <Select onValueChange={(value) => { setVoiceProvider(value); form.setValue("Voice", ""); field.onChange(value) }} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="min-w-[140px] text-stone-950 dark:text-stone-50">
-                                            <SelectValue className='text-stone-950 dark:text-stone-50' placeholder="Provider" />
+                                        <SelectTrigger className="min-w-[140px] ">
+                                            <SelectValue placeholder="Provider" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         {voiceProviders.map((v, i) => {
-                                            return <SelectItem key={i} className='text-stone-950 dark:text-stone-50' value={v}>{v}</SelectItem>
+                                            return <SelectItem key={i} value={v}>{v}</SelectItem>
                                         }
                                         )}
                                     </SelectContent>
@@ -698,16 +771,16 @@ function ScenarioForm() {
                         name="Voice"
                         render={({ field }) => (
                             <FormItem className='my-2 sm:mx-2 sm:my-0'>
-                                <FormLabel className='text-stone-950 dark:text-stone-50' >Voice</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormLabel >Voice</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className=" min-w-[100px] flex text-stone-950 dark:text-stone-50">
-                                            <SelectValue className='text-stone-950 dark:text-stone-50' placeholder="AI Voice" />
+                                        <SelectTrigger className=" min-w-[100px] flex ">
+                                            <SelectValue placeholder="AI Voice" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         {renderVoiceOptions().map((v, i) => {
-                                            return <SelectItem key={i} id={"voice-" + i} className='text-stone-950 dark:text-stone-50' value={v.voice}>{v.name} {v.description}</SelectItem>
+                                            return <SelectItem key={i} id={"voice-" + i} value={v.voice}>{v.name} {v.description}</SelectItem>
                                         })}
                                     </SelectContent>
                                 </Select>
@@ -718,9 +791,9 @@ function ScenarioForm() {
                         )}
                     />
                 </section>
-                <div className='flex-col flex md:flex-row '>
-                    <Button className="flex min-w-24 mx-24 my-2 md:mx-2" type="submit">{id ? "Update" : "Create"}</Button>
-                    <Button variant="destructive" className="flex mx-24  min-w-24  my-2 md:mx-2" type='button' onClick={() => navigate(-1)}>Cancel</Button>
+                <div className='flex-col flex md:flex-row gap-x-2'>
+                    <Button className="flex min-w-24 mx-12 my-2 md:mx-2" type="submit">{id ? "Update" : "Create"}</Button>
+                    <Button variant="destructive" className="flex min-w-24 my-2 mx-12 md:mx-2" type='button' onClick={() => navigate(-1)}>Cancel</Button>
                 </div>
 
             </form>

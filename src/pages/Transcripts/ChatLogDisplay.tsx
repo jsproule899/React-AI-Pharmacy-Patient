@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import Spinner from '@/components/ui/Spinner';
 import { toast } from '@/hooks/use-toast';
 import { Transcript } from '@/types/Transcript';
@@ -5,8 +6,8 @@ import axios from 'axios';
 import html2canvas from 'html2canvas';
 import { jsPDF } from "jspdf";
 import { useEffect, useState } from 'react';
-import { FaFileArrowDown, FaFilePdf, FaSpinner } from 'react-icons/fa6';
-import { useParams } from 'react-router';
+import { FaArrowLeft, FaFileArrowDown, FaFilePdf, FaSpinner } from 'react-icons/fa6';
+import { Link, useParams } from 'react-router';
 
 const ChatLogDisplay = () => {
     const { id } = useParams<{ id?: string }>();
@@ -203,6 +204,12 @@ const ChatLogDisplay = () => {
 
     return (
         <div className="md:p-6 flex flex-col flex-grow md:mx-10">
+            <Link to="/transcripts" className=''>
+                <Button variant={"link"}>
+                    <FaArrowLeft />
+                    Back
+                </Button>
+            </Link>
             <h1 className="text-4xl font-bold mb-4 mx-auto text-stone-950 dark:text-stone-50">Scenario Transcript</h1>
             {messages.length === 0 ? <input type="file" accept=".txt" onChange={handleFileUpload} className="mb-4 p-2 border rounded max-w-96  text-stone-950 dark:text-stone-50" />
                 : (<>
