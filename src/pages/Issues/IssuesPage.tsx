@@ -12,11 +12,13 @@ import {
 import Spinner from "@/components/ui/Spinner";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { Issue } from "@/types/issue";
-import axios from "axios";
+import { keepPreviousData, QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Axios } from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { FaListCheck, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
-import { Link } from "react-router";
+import { Link, Location, NavigateFunction, useLocation, useNavigate } from "react-router";
 
 
 function styleStatusColour(status: string | undefined) {
@@ -37,10 +39,19 @@ function styleStatusColour(status: string | undefined) {
 }
 
 function IssuesPage() {
-    const [issues, setIssues] = useState<Issue[]>([]);
+    const axiosPrivate = useAxiosPrivate();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryClient = useQueryClient()
+    const { isPending, error, isError, data: issues } = useQuery<Issue[]>({
+        queryKey: ['issues'],
+        queryFn: () => getIssues(navigate, location, queryClient, axiosPrivate),
+        staleTime: 2 * 60 * 1000,
+        placeholderData: keepPreviousData,
+
+    })
     const [filtered, setFiltered] = useState<Issue[]>([]);
     const [filteredAndPaginated, setFilteredAndPaginated] = useState<Issue[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [selectedStatus, setSelectedStatus] = useState("NEW");
     const [filters, setFilters] = useState({
         category: "",
@@ -56,30 +67,37 @@ function IssuesPage() {
 
     const categories = [...new Set(issues?.map(issue => issue.Category))]
 
-    const fetchIssues = async () => {
+    const getIssues = async (navigate: NavigateFunction, location: Location<any>, queryClient: QueryClient, axiosPrivate: Axios) => {
+
         try {
-            const res = await axios.get(`${import.meta.env.VITE_API_BASEURL}/api/issue`)
-            setIssues(res.data);
+            const res = await axiosPrivate.get('/api/issue', {
+                validateStatus: (status) => { return status <= 400 }
+            })
+
             setPagination(prev => ({ ...prev, totalPages: res.data.length / prev.pageSize }))
-            setIsLoading(false);
-        } catch (error) {
+            return res.data
+        } catch (error: any) {
             console.log(error);
-            setIsLoading(false);
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
                 description: "There was a problem loading the issues. Please try again.",
             })
+            if (error.response?.status === 401) {
+                queryClient.invalidateQueries({ queryKey: ['issues'] })
+                navigate("/login", { state: { from: location }, replace: true });
+                toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: "You must be logged in",
+                });
+            }
         }
     }
 
-    useEffect(() => {
-        fetchIssues();
-
-    }, []);
 
     const filterIssues = useCallback(() => {
-        let filteredIssues = [...issues];
+        let filteredIssues = [...issues || []];
 
         // Apply filters
         if (filters.category && filters.category !== "all") {
@@ -129,7 +147,10 @@ function IssuesPage() {
         }
 
         try {
-            await axios.put(`${import.meta.env.VITE_API_BASEURL}/api/issue/${id}`, { Status: selectedStatus }).then(() => fetchIssues())
+            await axiosPrivate.put(`/api/issue/${id}`, { Status: selectedStatus }, {
+                validateStatus: (status) => { return status <= 400 }
+            });
+
         } catch (error) {
             console.log(error);
             toast({
@@ -140,11 +161,20 @@ function IssuesPage() {
         }
     }
 
+    const updateStatusMutation = useMutation({
+        mutationFn: (id: string) => handleStatusUpdate(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['issues'] as any);
+        }
+    })
+
     const handleDelete = async (id: string) => {
         try {
-            await axios.delete(`${import.meta.env.VITE_API_BASEURL}/api/issue/${id}`);
+            await axiosPrivate.delete(`/api/issue/${id}`, {
+                validateStatus: (status) => { return status <= 400 }
+            });
+
             console.log(`Issue ${id} deleted`);
-            setIssues(issues.filter((i: Issue) => i._id !== id))
         } catch (error) {
             console.error("Error deleting issue:", error);
             toast({
@@ -155,12 +185,19 @@ function IssuesPage() {
         }
     };
 
-    if (isLoading) {
+    const deleteMutation = useMutation({
+        mutationFn: (id: string) => handleDelete(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['issues'] as any);
+        }
+    })
+
+    if (isPending) {
         return <Spinner />;
     }
 
     return (
-        <div className="flex-grow bg-stone-50 dark:bg-stone-900 ">
+        <>
             <div className="w-11/12 mx-auto m-4">
                 <div className="flex flex-wrap justify-start py-4 gap-4 ">
                     <div className="flex flex-col sm:flex-row  items-center gap-2 order-1">
@@ -246,7 +283,7 @@ function IssuesPage() {
                             {filteredAndPaginated.map((issue: Issue, index: number) => {
                                 return (
                                     <TableRow key={index} className="text-stone-950 dark:text-stone-50">
-                                        <TableCell className="font-medium">#{issues.indexOf(issue) + 1}</TableCell>
+                                        <TableCell className="font-medium">#{issues?.indexOf(issue) || 0 + 1}</TableCell>
 
                                         <TableCell>{issue.Category}</TableCell>
                                         <TableCell><p className="overflow-y-clip max-h-20 cursor-pointer" onClick={(e) => {
@@ -294,7 +331,7 @@ function IssuesPage() {
                                                     </div>
                                                     <DialogFooter className="text-center justify-self-center w-full sm:w-auto flex-col">
                                                         <DialogClose asChild>
-                                                            <Button className="m-2 w-full" onClick={() => { handleStatusUpdate(issue._id) }}>Save</Button>
+                                                            <Button className="m-2 w-full" onClick={() => { updateStatusMutation.mutate(issue._id) }}>Save</Button>
                                                         </DialogClose>
                                                         <DialogClose asChild>
                                                             <Button className="m-2 w-full" variant="secondary">Cancel</Button>
@@ -322,7 +359,7 @@ function IssuesPage() {
                                                             <Button type="button" variant="outline" className='mb-1 px-8 mx-2'>Close</Button>
                                                         </DialogClose>
                                                         <DialogClose asChild>
-                                                            <Button type="button" variant="destructive" className='mb-1 px-8 mx-2' onClick={() => { handleDelete(issue._id) }}>Delete</Button>
+                                                            <Button type="button" variant="destructive" className='mb-1 px-8 mx-2' onClick={() => deleteMutation.mutate(issue._id)}>Delete</Button>
                                                         </DialogClose>
                                                     </DialogFooter>
                                                 </DialogContent>
@@ -342,7 +379,7 @@ function IssuesPage() {
                     <Select
                         value={`${pagination.pageSize}`}
                         onValueChange={(value) => {
-                            setPagination((prev) => ({ ...prev, pageIndex: 0, pageSize: Number(value), totalPages: issues.length / Number(value) }))
+                            setPagination((prev) => ({ ...prev, pageIndex: 0, pageSize: Number(value), totalPages: issues?.length ? issues.length / Number(value) : 1 }))
                             setPagination((prev) => ({ ...prev, }))
                         }}
                     >
@@ -379,7 +416,7 @@ function IssuesPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 
