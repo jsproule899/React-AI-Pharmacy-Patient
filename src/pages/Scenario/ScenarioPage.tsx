@@ -1,6 +1,6 @@
 import Spinner from "@/components/ui/Spinner";
 import { toast } from "@/hooks/use-toast";
-import axios from "axios";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { useCallback, useEffect, useState } from "react";
 import { FaExpand } from "react-icons/fa6";
 import { useLocation } from "react-router";
@@ -12,6 +12,7 @@ function ScenarioPage() {
     const location = useLocation();
     const [isUploading, setIsUploading] = useState(false);
     const isEmbeddedRoute = location.pathname.startsWith('/embedded');
+    const axiosPrivate = useAxiosPrivate();
 
 
     const { unityProvider, isLoaded, UNSAFE__unityInstance, requestFullscreen, sendMessage, addEventListener, removeEventListener } = useUnityContext({
@@ -21,7 +22,7 @@ function ScenarioPage() {
         frameworkUrl: "/unity/Build/Build.framework.js.unityweb",
         codeUrl: "/unity/Build/Build.wasm.unityweb",
         streamingAssetsUrl: '/unity/StreamingAssets',
-       
+
     });
 
     const handleTranscriptUpload = useCallback((filename: string, data: string) => {
@@ -29,7 +30,7 @@ function ScenarioPage() {
         let scenarioId = paths[paths.length - 1];
         setIsUploading(true);
         try {
-            axios.post(`${import.meta.env.VITE_API_BASEURL}/api/transcript`, { Filename: filename, Data: data, Scenario: scenarioId }).then(() => {
+            axiosPrivate.post('/api/transcript', { Filename: filename, Data: data, Scenario: scenarioId }).then(() => {
                 setIsUploading(false);
             })
         } catch (error) {

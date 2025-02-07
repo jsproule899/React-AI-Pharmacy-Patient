@@ -1,8 +1,8 @@
+import { axiosPrivate } from '@/components/api/axios';
 import { Button } from '@/components/ui/button';
 import Spinner from '@/components/ui/Spinner';
 import { toast } from '@/hooks/use-toast';
 import { Transcript } from '@/types/Transcript';
-import axios from 'axios';
 import html2canvas from 'html2canvas';
 import { jsPDF } from "jspdf";
 import { useEffect, useState } from 'react';
@@ -20,7 +20,7 @@ const ChatLogDisplay = () => {
 
     const fetchTranscript = async () => {
         try {
-            await axios.get(`${import.meta.env.VITE_API_BASEURL}/api/transcript/${id}`).then(async (res) => {
+            await axiosPrivate.get(`${import.meta.env.VITE_API_BASEURL}/api/transcript/${id}`).then(async (res) => {
                 if (res.data) {
                     setTranscript(res.data)
                     const chatMessages = res.data.Data.split('\n'); // Assuming each line is a separate message

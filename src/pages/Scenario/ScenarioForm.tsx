@@ -1,5 +1,6 @@
 "use client"
 
+import { axiosPrivate } from "@/components/api/axios";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -19,7 +20,7 @@ import Spinner from '@/components/ui/Spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from 'axios';
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
@@ -162,7 +163,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 function ScenarioForm() {
-
+    const queryClient = useQueryClient()
     const { id } = useParams<{ id?: string }>(); // The `id` parameter will be undefined if it's an add form
     const [scenarioData, setScenarioData] = useState<FormValues | null>(null);
     const [voiceProvider, setVoiceProvider] = useState('');
@@ -204,8 +205,8 @@ function ScenarioForm() {
     // Fetch the existing scenario data if editing
     useEffect(() => {
         if (id) {
-            axios
-                .get(`${import.meta.env.VITE_API_BASEURL}/api/scenario/${id}`)
+            axiosPrivate
+                .get(`/api/scenario/${id}`)
                 .then((response) => {
                     setScenarioData(response.data);
                     form.reset(response.data); // Pre-fill the form with the fetched data
@@ -230,7 +231,7 @@ function ScenarioForm() {
         try {
             if (id) {
                 // Update the existing scenario
-                axios.put(`${import.meta.env.VITE_API_BASEURL}/api/scenario/${id}`, values).then((res) => {
+                axiosPrivate.put(`$/api/scenario/${id}`, values).then((res) => {
                     if (res.status.toString().startsWith("20")) {
                         toast({
                             description: "Scenario successfully updated."
@@ -242,7 +243,7 @@ function ScenarioForm() {
                 })
             } else {
                 // Create a new scenario
-                axios.post(`${import.meta.env.VITE_API_BASEURL}/api/scenario`, values, {
+                axiosPrivate.post('api/scenario', values, {
                     headers: {
                         'content-type': 'application/x-www-form-urlencoded'
                     }
@@ -258,7 +259,9 @@ function ScenarioForm() {
                 })
 
             }
+            queryClient.invalidateQueries(['scenarios'] as any);
             navigate("/scenarios"); // Navigate to the scenarios list after successful submission
+
         } catch (error) {
             console.error("Error saving scenario", error);
             toast({
@@ -460,7 +463,7 @@ function ScenarioForm() {
                                             <FormLabel >Gender</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
-                                                    <SelectTrigger className="w-[140px] ">
+                                                    <SelectTrigger className="w-[140px]">
                                                         <SelectValue placeholder="Gender" />
                                                     </SelectTrigger>
                                                 </FormControl>
