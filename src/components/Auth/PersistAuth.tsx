@@ -9,7 +9,7 @@ const PersistAuth = () => {
     const refresh = useRefreshToken();
     const { auth, persist } = useAuth();
     const ref = useRef<LoadingBarRef>(null);
-    
+
 
     useEffect(() => {
         const verifyRefreshToken = async () => {
@@ -23,10 +23,12 @@ const PersistAuth = () => {
                 setIsLoading(false);
                 auth.isAuthenticating = false;
             }
+
         }
 
         !auth?.accessToken ? verifyRefreshToken() : setIsLoading(false);
-        
+
+
     }, [isLoading])
 
     useEffect(() => {

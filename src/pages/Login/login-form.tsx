@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast"
 import useAuth from "@/hooks/useAuth"
 import { cn } from "@/lib/utils"
 import { jwtDecode } from "jwt-decode"
-import React, { useMemo, useState } from "react"
+import React, { useMemo, useRef, useState } from "react"
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6"
 import { useLocation, useNavigate } from "react-router"
 import { axiosPrivate } from "../../components/api/axios"
@@ -40,10 +40,12 @@ export function LoginForm({
     const from = location.state?.from?.pathname || "/"
     var { auth, setAuth, persist, setPersist } = useAuth();
     const { toast } = useToast()
+    const LoginButton = useRef<HTMLButtonElement | null>(null)
 
     const handleSubmit = async (e: React.FormEvent<LoginFormElement>) => {
         e.preventDefault();
-
+        LoginButton.current!.innerHTML = "Logging in..."
+        LoginButton.current!.disabled = true;
         try {
             const res = await axiosPrivate.post('/api/auth/login', {
                 identifier: e.currentTarget.elements.identifier.value.toString().toLowerCase(),
@@ -65,7 +67,7 @@ export function LoginForm({
                 setAuth({ email: email || null, studentNo, roles: role || null, accessToken, isAuthenticated: true, isAuthenticating: false })
                 navigate(from, { replace: true })
             } else {
-
+                
                 toast({
                     variant: "destructive",
                     description: res.data.message
@@ -80,6 +82,9 @@ export function LoginForm({
                     description: err.message
                 })
             }
+        } finally{
+            LoginButton.current!.innerHTML = "Log in"
+            LoginButton.current!.disabled = false;
         }
     }
 
@@ -124,7 +129,7 @@ export function LoginForm({
                                 <Input
                                     id="identifier"
                                     className="dark:border-1 dark:border-stone-50"
-                        
+
                                     placeholder="jdoe@qub.ac.uk"
                                     required
                                 />
@@ -174,7 +179,7 @@ export function LoginForm({
 
                             </div>
 
-                            <Button type="submit" className="w-full">
+                            <Button type="submit" className="w-full" ref={LoginButton}>
                                 Login
                             </Button>
 
