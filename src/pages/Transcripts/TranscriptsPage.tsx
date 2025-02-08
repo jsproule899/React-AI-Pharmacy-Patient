@@ -4,7 +4,7 @@ import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { Transcript } from "@/types/Transcript";
 import { keepPreviousData, QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios, { Axios } from "axios";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { columns } from "./columns";
 import { TranscriptTable } from "./Table";
 import useAuth from "@/hooks/useAuth";
@@ -40,6 +40,7 @@ function TranscriptsPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { auth  } = useAuth();
+  const [allowedColumns, setAllowedColumns] = useState(columns);
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient()
   const { isPending, error, isError, data: transcripts } = useQuery({
@@ -99,6 +100,12 @@ function TranscriptsPage() {
     }
   })
 
+  useLayoutEffect(()=>{
+    if(!auth.roles?.includes("staff")) {
+      setAllowedColumns(columns.filter(col=> col.id !== 'remove'))
+    }
+  },[auth.roles])
+
 
   if (isPending) {
     return <Spinner />;
@@ -116,7 +123,7 @@ function TranscriptsPage() {
   return (
     <div className='flex flex-col flex-grow bg-stone-50 dark:bg-stone-900'>
       {isError ? <h2 className='text-2xl font-bold text-stone-950 dark:text-stone-50 my-2 text-center'>No Transcripts found... {error.message} Please try again later.</h2>
-        : <TranscriptTable columns={columns} data={transcripts} handleDownload={handleDownload} handleDelete={deleteMutation.mutate} downloadLoadingId={downloadLoadingId} />
+        : <TranscriptTable columns={allowedColumns} data={transcripts} handleDownload={handleDownload} handleDelete={deleteMutation.mutate} downloadLoadingId={downloadLoadingId} />
       }
     </div>
 

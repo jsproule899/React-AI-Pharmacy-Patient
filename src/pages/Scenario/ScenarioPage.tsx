@@ -1,5 +1,6 @@
 import Spinner from "@/components/ui/Spinner";
 import { toast } from "@/hooks/use-toast";
+import useAuth from "@/hooks/useAuth";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { useCallback, useEffect, useState } from "react";
 import { FaExpand } from "react-icons/fa6";
@@ -13,6 +14,7 @@ function ScenarioPage() {
     const [isUploading, setIsUploading] = useState(false);
     const isEmbeddedRoute = location.pathname.startsWith('/embedded');
     const axiosPrivate = useAxiosPrivate();
+    const {auth} = useAuth();
 
 
     const { unityProvider, isLoaded, UNSAFE__unityInstance, requestFullscreen, sendMessage, addEventListener, removeEventListener } = useUnityContext({
@@ -52,6 +54,8 @@ function ScenarioPage() {
     useEffect(() => {
         if (isLoaded) {
             sendMessage("ConfigController", "SetApiBaseUrl", import.meta.env.VITE_API_BASEURL)
+            sendMessage("ConfigController", "SetAuthToken", auth.accessToken || "")
+
         }
     }, [isLoaded])
 

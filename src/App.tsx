@@ -41,6 +41,7 @@ function AppWithRouting() {
             {/*protected routes*/}
             <Route element={<RequireAuth allowedRoles={['student', 'staff', 'superUser']} />}>
               <Route path="scenarios" element={<ScenariosPage />} />
+              <Route path="scenarios/:id" element={<ScenarioPage />} />
               <Route path="/transcripts" element={<TranscriptsPage />} />
               <Route path="/transcripts/:id" element={<TranscriptPage />} />
             </Route>
@@ -52,7 +53,7 @@ function AppWithRouting() {
               <Route path="/issues" element={<IssuesPage />} />
             </Route>
 
-            <Route path="scenarios/:id" element={<ScenarioPage />} />
+            
             <Route path="/login" element={<LoginPage />} />
 
             <Route path='/unauthorized' element={<Unauthorized />} />
