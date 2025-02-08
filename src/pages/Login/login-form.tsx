@@ -15,9 +15,10 @@ import { jwtDecode } from "jwt-decode"
 import React, { useMemo, useState } from "react"
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6"
 import { useLocation, useNavigate } from "react-router"
-import { axiosPrivate } from "./api/axios"
-import { AuthJwtPayload } from "./Auth/RequireAuth"
-import { Checkbox } from "./ui/checkbox"
+import { axiosPrivate } from "../../components/api/axios"
+import { AuthJwtPayload } from "../../components/Auth/RequireAuth"
+import { Checkbox } from "../../components/ui/checkbox"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 
 export function LoginForm({
     className,
@@ -25,7 +26,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
 
     interface FormElements extends HTMLFormControlsCollection {
-        email: HTMLInputElement
+        identifier: HTMLInputElement
         password: HTMLInputElement
     }
     interface LoginFormElement extends HTMLFormElement {
@@ -45,7 +46,7 @@ export function LoginForm({
 
         try {
             const res = await axiosPrivate.post('/api/auth/login', {
-                email: e.currentTarget.elements.email.value,
+                identifier: e.currentTarget.elements.identifier.value.toString().toLowerCase(),
                 password: e.currentTarget.elements.password.value
             },
                 {
@@ -63,7 +64,6 @@ export function LoginForm({
 
                 setAuth({ email: email || null, studentNo, roles: role || null, accessToken, isAuthenticated: true, isAuthenticating: false })
                 navigate(from, { replace: true })
-                console.log(res.data);
             } else {
 
                 toast({
@@ -107,25 +107,25 @@ export function LoginForm({
 
         !auth.isAuthenticated &&
         <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card className="px-10 py-5 w-max max-w-md ">
+            <Card className="px-10 py-5 w-screen sm:max-w-md ">
 
                 <CardHeader className="pt-4">
                     {errMsg && <Label className="font-semibold text-qub-red dark:text-qub-red border-qub-red border rounded-lg bg-qub-red/10 p-4 animate-in">{errMsg}</Label>}
                     <CardTitle className="text-2xl pt-2">Login</CardTitle>
-                    <CardDescription className="w-72">
-                        To sign into your profile, please enter your email address and password.
+                    <CardDescription className="">
+                        To sign into your profile, please enter your email address or student number and password.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="identifier">Email or Student No.</Label>
                                 <Input
-                                    id="email"
+                                    id="identifier"
                                     className="dark:border-1 dark:border-stone-50"
-                                    type="email"
-                                    placeholder="m@example.com"
+                        
+                                    placeholder="jdoe@qub.ac.uk"
                                     required
                                 />
                             </div>
@@ -157,9 +157,21 @@ export function LoginForm({
                                     checked={persist}
                                     onCheckedChange={togglePersist}
                                 />
-                                <Label className="" onClick={togglePersist} >
-                                    Trust this device?
-                                </Label>
+                                <HoverCard>
+                                    <HoverCardTrigger>
+                                        <Label className="hover:underline" onClick={togglePersist} >
+                                            Trust this device?
+                                        </Label>
+                                    </HoverCardTrigger>
+                                    <HoverCardContent className="dark:bg-stone-900">
+                                        <p className="text-xs">
+                                            Reduces the number of times you're asked to sign in on this device.
+                                            To keep your account secure, use this option only on your personal computer or device.
+                                        </p>
+
+                                    </HoverCardContent>
+                                </HoverCard>
+
                             </div>
 
                             <Button type="submit" className="w-full">
