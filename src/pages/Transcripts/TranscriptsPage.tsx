@@ -1,14 +1,14 @@
 import Spinner from "@/components/ui/Spinner";
 import { toast } from "@/hooks/use-toast";
+import useAuth from "@/hooks/useAuth";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { Transcript } from "@/types/Transcript";
 import { keepPreviousData, QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios, { Axios } from "axios";
+import { Axios } from "axios";
 import { useLayoutEffect, useState } from "react";
+import { Location, NavigateFunction, useLocation, useNavigate } from "react-router";
 import { columns } from "./columns";
 import { TranscriptTable } from "./Table";
-import useAuth from "@/hooks/useAuth";
-import { Location, NavigateFunction, useLocation, useNavigate } from "react-router";
 
 
 const getTranscripts = async (axiosPrivate: Axios, navigate: NavigateFunction, location: Location<any>, queryClient:QueryClient ) => {

@@ -101,7 +101,7 @@ function ScenariosPage() {
     const location = useLocation();
     const axiosPrivate = useAxiosPrivate();
     const queryClient = useQueryClient()
-    const { isPending, error, isError, data: scenarios } = useQuery<Scenario[]>({
+    const { isPending, data: scenarios } = useQuery<Scenario[]>({
         queryKey: ['scenarios'],
         queryFn: () => getScenarios(navigate, location, queryClient, axiosPrivate),
         staleTime: 2 * 60 * 1000,

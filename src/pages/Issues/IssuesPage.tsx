@@ -43,7 +43,7 @@ function IssuesPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const queryClient = useQueryClient()
-    const { isPending, error, isError, data: issues } = useQuery<Issue[]>({
+    const { isPending, data: issues } = useQuery<Issue[]>({
         queryKey: ['issues'],
         queryFn: () => getIssues(navigate, location, queryClient, axiosPrivate),
         staleTime: 2 * 60 * 1000,

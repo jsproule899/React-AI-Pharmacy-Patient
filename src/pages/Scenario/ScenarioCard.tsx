@@ -5,8 +5,8 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { FaCirclePlay, FaCode, FaPerson, FaRegCopy, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { useEffect, useRef, useState } from 'react';
+import { FaCirclePlay, FaCode, FaRegCopy, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 import {
   Dialog,
@@ -25,11 +25,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import useAuth from "@/hooks/useAuth";
-import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { Scenario } from "@/types/Scenario";
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router';
-import { Skeleton } from "@/components/ui/skeleton";
 
 
 
@@ -42,7 +40,6 @@ interface ScenarioProps {
 
 
 function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
-  const axiosPrivate = useAxiosPrivate();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
   const [iframeWidth, setIframeWidth] = useState("100%");

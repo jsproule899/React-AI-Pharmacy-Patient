@@ -1,4 +1,4 @@
-import { FaFacebookF, FaInstagram, FaTwitter, FaX, FaXTwitter } from "react-icons/fa6"
+import { FaFacebookF, FaInstagram, FaXTwitter } from "react-icons/fa6"
 import { Link } from "react-router"
 import { Button } from "../ui/button"
 

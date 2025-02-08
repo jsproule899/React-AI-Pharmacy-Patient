@@ -11,10 +11,10 @@ const useLogout = () => {
             roles: null,
             accessToken: null,
             isAuthenticated: false,
-            isAuthenticating:false
+            isAuthenticating: false
         });
         try {
-            const res = await axios.get('/api/auth/logout', {
+            await axios.get('/api/auth/logout', {
                 withCredentials: true,
                 validateStatus: (status) => { return status <= 400 }
             })
