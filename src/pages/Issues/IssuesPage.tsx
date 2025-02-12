@@ -350,7 +350,7 @@ function IssuesPage() {
                                                     <DialogHeader>
                                                         <DialogTitle className='text-black dark:text-white'>Are you absolutely sure?</DialogTitle>
                                                         <DialogDescription>
-                                                            This action cannot be undone. This will permanently delete the transcript
+                                                            This action cannot be undone. This will permanently delete the issue
                                                             and remove your data from our servers.
                                                         </DialogDescription>
                                                     </DialogHeader>

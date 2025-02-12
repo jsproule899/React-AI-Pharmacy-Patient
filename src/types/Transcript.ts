@@ -5,6 +5,7 @@ export interface Transcript {
   Filename: string;
   Data: string;
   Scenario: Scenario;
+  Student: string;
   createdAt: Date;
   updatedAt: Date;
 

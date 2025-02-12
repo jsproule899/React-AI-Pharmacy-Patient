@@ -11,10 +11,33 @@ import { columns } from "./columns";
 import { TranscriptTable } from "./Table";
 
 
-const getTranscripts = async (axiosPrivate: Axios, navigate: NavigateFunction, location: Location<any>, queryClient:QueryClient ) => {
+const getAllTranscripts = async (axiosPrivate: Axios, navigate: NavigateFunction, location: Location<any>, queryClient: QueryClient) => {
 
   try {
     const res = await axiosPrivate.get(`/api/transcript`, {
+      validateStatus: (status) => { return status <= 400 }
+    });
+
+    return res.data;
+  } catch (err: any) {
+    if (!err?.response) {
+
+    } else if (err.response?.status === 401) {
+      queryClient.invalidateQueries({ queryKey: ['transcripts'] })
+      navigate("/login", { state: { from: location }, replace: true });
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "You must be logged in",
+      });
+    }
+  }
+}
+
+const getTranscriptsByStudent = async (axiosPrivate: Axios, navigate: NavigateFunction, location: Location<any>, queryClient: QueryClient, studentNo: string) => {
+
+  try {
+    const res = await axiosPrivate.get(`/api/transcript/student/${studentNo}`, {
       validateStatus: (status) => { return status <= 400 }
     });
 
@@ -39,13 +62,16 @@ const getTranscripts = async (axiosPrivate: Axios, navigate: NavigateFunction, l
 function TranscriptsPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { auth  } = useAuth();
+  const { auth } = useAuth();
   const [allowedColumns, setAllowedColumns] = useState(columns);
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient()
   const { isPending, error, isError, data: transcripts } = useQuery({
     queryKey: ['transcripts'],
-    queryFn: () => getTranscripts(axiosPrivate, navigate, location, queryClient),
+    queryFn: () =>
+      auth.roles?.includes("staff") || auth.roles?.includes("superUser")
+        ? getAllTranscripts(axiosPrivate, navigate, location, queryClient)
+        : getTranscriptsByStudent(axiosPrivate, navigate, location, queryClient, auth?.studentNo || ""),
     staleTime: 2 * 60 * 1000,
     placeholderData: keepPreviousData,
 
@@ -100,11 +126,11 @@ function TranscriptsPage() {
     }
   })
 
-  useLayoutEffect(()=>{
-    if(!auth.roles?.includes("staff")) {
-      setAllowedColumns(columns.filter(col=> col.id !== 'remove'))
+  useLayoutEffect(() => {
+    if (!auth.roles?.includes("staff")) {
+      setAllowedColumns(columns.filter(col => col.id !== 'remove'))
     }
-  },[auth.roles])
+  }, [auth.roles])
 
 
   if (isPending) {

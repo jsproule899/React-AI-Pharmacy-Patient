@@ -1,8 +1,10 @@
 import axios from "@/components/api/axios";
 import useAuth from "./useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 const useLogout = () => {
 
+    const queryClient = useQueryClient()
     const { setAuth } = useAuth();
 
     const logout = async () => {
@@ -13,6 +15,9 @@ const useLogout = () => {
             isAuthenticated: false,
             isAuthenticating: false
         });
+
+
+        queryClient.clear();
         try {
             await axios.get('/api/auth/logout', {
                 withCredentials: true,

@@ -10,7 +10,7 @@ import { useTableContext } from "./Table"
 export const columns: ColumnDef<Transcript>[] = [
     {
         accessorKey: "student_no",
-        accessorFn: (transcript) => transcript.Filename.split('_')[0],
+        accessorFn: (transcript) => transcript.Student,
         header: ({ column }) => {
             return (
                 <Button

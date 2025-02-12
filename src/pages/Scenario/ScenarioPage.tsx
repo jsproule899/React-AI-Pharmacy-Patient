@@ -27,12 +27,12 @@ function ScenarioPage() {
 
     });
 
-    const handleTranscriptUpload = useCallback((filename: string, data: string) => {
+    const handleTranscriptUpload = useCallback((filename: string, data: string, studentNo: string) => {
         let paths = location.pathname.split("/");
         let scenarioId = paths[paths.length - 1];
         setIsUploading(true);
         try {
-            axiosPrivate.post('/api/transcript', { Filename: filename, Data: data, Scenario: scenarioId }).then(() => {
+            axiosPrivate.post('/api/transcript', { Filename: filename, Data: data, Scenario: scenarioId, Student: studentNo}).then(() => {
                 setIsUploading(false);
             })
         } catch (error) {
@@ -54,8 +54,9 @@ function ScenarioPage() {
     useEffect(() => {
         if (isLoaded) {
             sendMessage("ConfigController", "SetApiBaseUrl", import.meta.env.VITE_API_BASEURL)
-            sendMessage("ConfigController", "SetAuthToken", auth.accessToken || "")
-
+            sendMessage("Authentication", "SetAuth", auth.accessToken || "")
+            sendMessage("Authentication", "SetEmail", auth.email || "")
+            sendMessage("Authentication", "SetStudentNum", auth.studentNo || "")
         }
     }, [isLoaded])
 
@@ -101,7 +102,7 @@ function ScenarioPage() {
                 <Spinner />
             )}
             <div className="flex-grow flex justify-center items-center bg-stone-50 dark:bg-stone-900 relative" style={{ display: isLoaded ? "flex" : "none" }}>
-                <Unity unityProvider={unityProvider} devicePixelRatio={window.devicePixelRatio} className={`w-full ${isEmbeddedRoute ? 'h-dvh' : 'h-[calc(100dvh-5rem)]'}`} tabIndex={1} />
+                <Unity unityProvider={unityProvider} devicePixelRatio={window.devicePixelRatio} className={`w-full ${isEmbeddedRoute ? 'h-dvh' : 'h-[calc(100dvh-5rem)]'}`} />
                 <button onClick={handleFullscreen}><FaExpand className="w-6 h-6 m-1 text-white hover:scale-110 transition-transform absolute bottom-0 right-0 z-50" /></button>
             </div>
 
