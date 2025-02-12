@@ -33,12 +33,20 @@ const NavLinks = ({ auth, toggleMenu }: any) => {
             }>
                 Transcripts
             </NavLink>
-            {auth?.roles?.includes('staff') &&
-                <NavLink to="/issues" className={({ isActive }) =>
-                    isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
-                } onClick={toggleMenu}>
-                    Issues
-                </NavLink>
+            {auth?.roles?.includes('staff') || auth?.roles?.includes('superUser') &&
+                <>
+                    <NavLink to="/issues" className={({ isActive }) =>
+                        isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
+                    } onClick={toggleMenu}>
+                        Issues
+                    </NavLink>
+
+                    <NavLink to="/voices" className={({ isActive }) =>
+                        isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
+                    } onClick={toggleMenu}>
+                        Voices
+                    </NavLink>
+                </>
             }
         </>
     )

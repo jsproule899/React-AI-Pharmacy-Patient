@@ -1,6 +1,5 @@
 "use client"
 
-import { axiosPrivate } from "@/components/api/axios";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -19,10 +18,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Spinner from '@/components/ui/Spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/hooks/use-toast";
+import useAxiosPrivate from "@/hooks/useAxiosPrivate";
+import useSamplePlayer from "@/hooks/useSamplePlayer";
+import { Voice } from "@/types/Voice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
+import { FaCirclePlay, FaCircleStop } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 
@@ -34,72 +37,6 @@ const openAIModels = ["gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest"]
 const claudeModels = ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-5-haiku-20241022", "claude-3-5-sonnet-20241022", "claude-3-opus-20240229"]
 
 const deepSeekModels = ["deepseek-chat"]
-
-const voiceProviders = ["Unreal Speech", "Eleven Labs"]
-
-const unrealSpeechVoices = [
-    {
-        name: "Dan",
-        description: "(Young Male)",
-        voice: "Dan",
-    },
-    {
-        name: "Will",
-        description: "(Mature Male)",
-        voice: "Will"
-    },
-    {
-        name: "Scarlett",
-        description: "(Young Female)",
-        voice: "Scarlett"
-    },
-    {
-        name: "Liv",
-        description: "(Young Female)",
-        voice: "Liv"
-    },
-    {
-        name: "Amy",
-        description: "(Mature Female)",
-        voice: "Amy"
-    }]
-
-const elevenLabsVoices = [
-    {
-        name: "Peter",
-        description: "(NI Male)",
-        voice: "E8tAm6nkbW2yKYAJLVXH"
-    },
-    {
-        name: "Michael",
-        description: "(Mature Irish Male)",
-        voice: "8SNzJpKT62Cqqqe8Injx"
-    },
-    {
-        name: "Connor",
-        description: "(Young Irish Male)",
-        voice: "bCwW7dMszE8OyqvhCaQY"
-    },
-    {
-        name: "Chris",
-        description: "(Young Male)",
-        voice: "iP95p4xoKVk53GoZ742B"
-    },
-    {
-        name: "Megan",
-        description: "(Young NI Female)",
-        voice: "wYiPSnV1DhrUtMgJiRr1"
-    },
-    {
-        name: "Niamh",
-        description: "(Young Irish Female)",
-        voice: "1e9Gn3OQenGu4rjQ3Du1"
-    },
-    {
-        name: "Shannon",
-        description: "(Mature Irish Female)",
-        voice: "tlKpUDfYaDGG10tLVOrH"
-    }]
 
 
 const otherPersonSchema = z.object({
@@ -164,11 +101,15 @@ type FormValues = z.infer<typeof formSchema>;
 
 function ScenarioForm() {
     const queryClient = useQueryClient()
+    const axiosPrivate = useAxiosPrivate()
     const { id } = useParams<{ id?: string }>(); // The `id` parameter will be undefined if it's an add form
     const [scenarioData, setScenarioData] = useState<FormValues | null>(null);
+    const [voices, setVoices] = useState<Voice[]>([]);
+    const [voiceProviders, setVoiceProviders] = useState<string[]>([]);
     const [voiceProvider, setVoiceProvider] = useState('');
     const [AIProvider, setAIProvider] = useState('');
     const [patientIsSelf, setpatientIsSelf] = useState(true);
+    const { indexPlaying, playSample, stopSample } = useSamplePlayer();
     const { toast } = useToast()
 
     const navigate = useNavigate();
@@ -202,6 +143,19 @@ function ScenarioForm() {
         },
     })
 
+    useEffect(() => {
+
+        axiosPrivate.get('/api/voice/')
+            .then((response) => {
+                const fetchedVoices: Voice[] = response.data
+                setVoices(fetchedVoices)
+                setVoiceProviders([...new Set(fetchedVoices?.map(voice => voice.Provider))])
+            }).catch((err) => {
+                console.log(err.message);
+            })
+
+    }, [])
+
     // Fetch the existing scenario data if editing
     useEffect(() => {
         if (id) {
@@ -231,7 +185,7 @@ function ScenarioForm() {
         try {
             if (id) {
                 // Update the existing scenario
-                axiosPrivate.put(`$/api/scenario/${id}`, values).then((res) => {
+                axiosPrivate.put(`/api/scenario/${id}`, values).then((res) => {
                     if (res.status.toString().startsWith("20")) {
                         toast({
                             description: "Scenario successfully updated."
@@ -243,7 +197,7 @@ function ScenarioForm() {
                 })
             } else {
                 // Create a new scenario
-                axiosPrivate.post('api/scenario', values, {
+                axiosPrivate.post('/api/scenario', values, {
                     headers: {
                         'content-type': 'application/x-www-form-urlencoded'
                     }
@@ -273,16 +227,6 @@ function ScenarioForm() {
         }
     };
 
-    const renderVoiceOptions = () => {
-        if (voiceProvider === voiceProviders[0]) {
-            return unrealSpeechVoices;
-        } else if (voiceProvider === voiceProviders[1]) {
-            return elevenLabsVoices;
-        } else {
-            return []; // Default to an empty array if no provider is selected
-        }
-    };
-
 
     const renderModelOptions = () => {
         if (AIProvider === AIProviders[0]) {
@@ -305,7 +249,9 @@ function ScenarioForm() {
 
 
         <Form {...form} >
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4 mx-10 mb-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4 mx-10 mb-4 justify-center">
+
+
                 <FormField
                     control={form.control}
                     name="Theme"
@@ -635,6 +581,33 @@ function ScenarioForm() {
                         </FormItem>
                     )}
                 />
+
+                <FormField
+                    control={form.control}
+                    name="Outcome"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Correct Outcome</FormLabel>
+                            <FormControl>
+                                <RadioGroup defaultValue="Treat" onValueChange={field.onChange}
+                                    className='flex flex-row'>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="Treat" id="Treat" />
+                                        <Label htmlFor="Treat">Treat</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="Refer" id="Refer" />
+                                        <Label htmlFor="Refer">Refer</Label>
+                                    </div>
+                                </RadioGroup></FormControl>
+
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+
+
                 <FormField
                     control={form.control}
                     name="Emotion"
@@ -665,29 +638,7 @@ function ScenarioForm() {
                     )}
                 />
 
-                <FormField
-                    control={form.control}
-                    name="Outcome"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Correct Outcome</FormLabel>
-                            <FormControl>
-                                <RadioGroup defaultValue="Treat" onValueChange={field.onChange}
-                                    className='flex flex-row'>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="Treat" id="Treat" />
-                                        <Label htmlFor="Treat">Treat</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="Refer" id="Refer" />
-                                        <Label htmlFor="Refer">Refer</Label>
-                                    </div>
-                                </RadioGroup></FormControl>
 
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
 
                 <section className='flex flex-col sm:flex-row'>
                     <FormField
@@ -744,21 +695,22 @@ function ScenarioForm() {
                 </section>
 
                 <section className='flex flex-col sm:flex-row'>
+
                     <FormField
                         control={form.control}
                         name="TTS"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel >AI Voice Provider</FormLabel>
-                                <Select onValueChange={(value) => { setVoiceProvider(value); form.setValue("Voice", ""); field.onChange(value) }} defaultValue={field.value}>
+                                <Select onValueChange={(value) => { setVoiceProvider(value); form.setValue("Voice", ""); field.onChange(value) }} defaultValue={field.value} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger className="min-w-[140px] ">
                                             <SelectValue placeholder="Provider" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {voiceProviders.map((v, i) => {
-                                            return <SelectItem key={i} value={v}>{v}</SelectItem>
+                                        {voiceProviders.map((p, i) => {
+                                            return <SelectItem key={i} value={p}>{p}</SelectItem>
                                         }
                                         )}
                                     </SelectContent>
@@ -769,31 +721,48 @@ function ScenarioForm() {
                             </FormItem>
                         )}
                     />
+
+
                     <FormField
                         control={form.control}
                         name="Voice"
                         render={({ field }) => (
                             <FormItem className='my-2 sm:mx-2 sm:my-0'>
                                 <FormLabel >Voice</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger className=" min-w-[100px] flex ">
-                                            <SelectValue placeholder="AI Voice" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {renderVoiceOptions().map((v, i) => {
-                                            return <SelectItem key={i} id={"voice-" + i} value={v.voice}>{v.name} {v.description}</SelectItem>
-                                        })}
-                                    </SelectContent>
-                                </Select>
-
-
-                                <FormMessage />
+                                <div id='voice' className="flex flex-row gap-2 items-center">
+                                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className=" min-w-[100px] flex ">
+                                                <SelectValue placeholder="AI Voice" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {voices.filter(voice => voice.Provider == voiceProvider).map((v, i) => {
+                                                return <SelectItem key={i} id={"voice-" + i} value={v.VoiceId}>{v.Name} ({v.Description})</SelectItem>
+                                            })}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                    <audio id={`audioPlayer`} />
+                                    {indexPlaying == -1
+                                        ? <FaCirclePlay className="text-qub-red cursor-pointer hover:text-qub-darkred" size={38} onClick={() =>
+                                            voices
+                                                ? playSample(voices.find(v => v.VoiceId == field.value), 0)
+                                                : toast({
+                                                    variant: "destructive",
+                                                    title: "Uh oh! Something went wrong.",
+                                                    description: "There was a problem loading the voice. Please try again.",
+                                                })
+                                        } />
+                                        : <FaCircleStop className="text-qub-red cursor-pointer hover:text-qub-darkred" size={38} onClick={() => stopSample()} />
+                                    }
+                                </div>
                             </FormItem>
                         )}
                     />
+
                 </section>
+
                 <div className='flex-col flex md:flex-row gap-x-2'>
                     <Button className="flex min-w-24 mx-12 my-2 md:mx-2" type="submit">{id ? "Update" : "Create"}</Button>
                     <Button variant="destructive" className="flex min-w-24 my-2 mx-12 md:mx-2" type='button' onClick={() => navigate(-1)}>Cancel</Button>
@@ -801,6 +770,7 @@ function ScenarioForm() {
 
             </form>
         </Form>
+
 
 
     )

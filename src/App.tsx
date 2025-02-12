@@ -16,6 +16,8 @@ import TranscriptsPage from "./pages/Transcripts/TranscriptsPage.tsx";
 import RequireAuth from "./components/Auth/RequireAuth.tsx";
 import PersistAuth from "./components/Auth/PersistAuth.tsx";
 import Unauthorized from "./pages/Unauthorized.tsx";
+import VoiceFormPage from "./pages/Voice/VoiceFormPage.tsx";
+import VoicePage from "./pages/Voice/VoicePage.tsx";
 
 
 function App() {
@@ -49,6 +51,9 @@ function AppWithRouting() {
             <Route element={<RequireAuth allowedRoles={['staff', 'superUser']} />}>
               <Route path="scenarios/add" element={<ScenarioFormPage />} />
               <Route path="scenarios/edit/:id" element={<ScenarioFormPage />} />
+              <Route path="voices" element={<VoicePage />} />
+              <Route path="voices/add" element={<VoiceFormPage />} />
+              <Route path="voices/edit/:id" element={<VoiceFormPage />} />
 
               <Route path="/issues" element={<IssuesPage />} />
             </Route>
