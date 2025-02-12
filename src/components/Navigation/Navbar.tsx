@@ -33,7 +33,7 @@ const NavLinks = ({ auth, toggleMenu }: any) => {
             }>
                 Transcripts
             </NavLink>
-            {auth?.roles?.includes('staff') || auth?.roles?.includes('superUser') &&
+            {auth?.roles?.some((role: string) => role === "staff" || role === "superUser") &&
                 <>
                     <NavLink to="/issues" className={({ isActive }) =>
                         isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "

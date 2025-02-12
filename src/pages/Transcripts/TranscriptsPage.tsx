@@ -127,7 +127,7 @@ function TranscriptsPage() {
   })
 
   useLayoutEffect(() => {
-    if (!auth.roles?.includes("staff")) {
+    if (!auth?.roles?.some(role => role === "staff" || role === "superUser")) {
       setAllowedColumns(columns.filter(col => col.id !== 'remove'))
     }
   }, [auth.roles])

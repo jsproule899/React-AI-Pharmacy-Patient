@@ -28,7 +28,7 @@ function VoicePage() {
     const location = useLocation();
     const { auth } = useAuth();
     const size = useScreenSize();
-    const {indexPlaying, playSample, stopSample} = useSamplePlayer();
+    const { indexPlaying, playSample, stopSample } = useSamplePlayer();
     const queryClient = useQueryClient()
     const { isPending, data: voices } = useQuery<Voice[]>({
         queryKey: ['voices'],
@@ -152,10 +152,10 @@ function VoicePage() {
 
     return (
         <>
-  <audio id={`audioPlayer`} />
+            <audio id={`audioPlayer`} />
             <div className="w-11/12 mx-auto m-4">
                 <div className="flex flex-wrap justify-start py-4 gap-4 ">
-                    {auth?.roles?.includes("staff") || auth?.roles?.includes("superUser") && (
+                    {auth?.roles?.some(role => role === "staff" || role === "superUser") && (
                         <Link to="/voices/add" className="">
                             <Button>
                                 {" "}
@@ -246,7 +246,7 @@ function VoicePage() {
 
 
                                         </TableCell>
-                                      
+
 
                                         <TableCell >
                                             <Link to={{ pathname: `/voices/edit/${voice._id}` }} >

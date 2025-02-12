@@ -132,7 +132,7 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
       <CardFooter className='text-sm self-end flex flex-grow justify-between '>
         <TimeAgo date={new Date(scenario.createdAt)} />
 
-        {auth?.roles?.includes("staff") || auth?.roles?.includes("superUser") &&
+        {auth?.roles?.some(role => role === "staff" || role === "superUser") &&
           <div className='flex justify-between'>
             <Link to={{ pathname: "/scenarios/edit/" + scenario._id }} >
               <FaRegPenToSquare className='h-6 w-6 mx-2 cursor-pointer' />
