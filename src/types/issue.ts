@@ -8,5 +8,4 @@ export interface Issue {
     Scenario: Scenario;
     createdAt: Date;
     updatedAt: Date;
-
 }

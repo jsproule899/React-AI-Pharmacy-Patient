@@ -9,9 +9,16 @@ function LoginPage() {
     const location = useLocation();
     const from = location.state?.from?.pathname || "/"
     useEffect(() => {
-        auth?.isAuthenticated && navigate(from, { replace: true })
-           
-    }, [])
+      
+        if (auth.isTempPassword) {
+            // Redirect to update password page if the user has a temporary password
+            navigate("/update-password", { state: { from: location }, replace: true });
+        } else if (auth.isAuthenticated) {
+            // Redirect to the intended page if the user is authenticated
+            navigate(from, { replace: true });
+        }
+
+    }, [auth.isTempPassword, auth.isAuthenticated, navigate, location, from])
     return (
 
         <div className="flex-grow bg-stone-50 dark:bg-stone-900">

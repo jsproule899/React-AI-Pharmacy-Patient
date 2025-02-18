@@ -1,7 +1,8 @@
 import useAuth from '@/hooks/useAuth';
 import useLogout from '@/hooks/useLogout';
 import { Suspense, useState } from 'react';
-import { FaArrowRightToBracket, FaUserGraduate } from 'react-icons/fa6';
+import { FaArrowRightToBracket, FaTriangleExclamation, FaUserGraduate, FaUserGroup } from 'react-icons/fa6';
+import { LuAudioLines } from "react-icons/lu";
 import { Link, NavLink, useNavigate } from 'react-router';
 import logoDark from '../../assets/QUB SoP Logo-dark.png';
 import logoLight from '../../assets/QUB SoP Logo.png';
@@ -15,39 +16,24 @@ import { Separator } from '../ui/separator';
 import { Skeleton } from '../ui/skeleton';
 
 
-const NavLinks = ({ auth, toggleMenu }: any) => {
+const NavLinks = ({ toggleMenu }: any) => {
     return (
         <>
             <NavLink to="/" end className={({ isActive }) =>
                 isActive ? "text-qub-red" : " text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red"
-            }>
+            } onClick={toggleMenu}>
                 Home
             </NavLink>
             <NavLink to="/scenarios" className={({ isActive }) =>
                 isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
-            }>
+            } onClick={toggleMenu}>
                 Scenarios
             </NavLink>
             <NavLink to="/transcripts" className={({ isActive }) =>
                 isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
-            }>
+            } onClick={toggleMenu}>
                 Transcripts
             </NavLink>
-            {auth?.roles?.some((role: string) => role === "staff" || role === "superUser") &&
-                <>
-                    <NavLink to="/issues" className={({ isActive }) =>
-                        isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
-                    } onClick={toggleMenu}>
-                        Issues
-                    </NavLink>
-
-                    <NavLink to="/voices" className={({ isActive }) =>
-                        isActive ? "text-qub-red" : "text-black hover:text-qub-red dark:text-white dark:hover:text-qub-red "
-                    } onClick={toggleMenu}>
-                        Voices
-                    </NavLink>
-                </>
-            }
         </>
     )
 }
@@ -77,16 +63,52 @@ const NavUserMenu = ({ auth, isPopOpen, setIsPopOpen, handleLogout, small }: any
                     </PopoverTrigger>
                     <PopoverContent className='rounded-none w-screen md:w-fit md:rounded-md bg-stone-100 p-1 relative data-[state=closed]:animate-none data-[state=closed]:opacity-0' onMouseLeave={() => small && setIsPopOpen(false)}>
 
+
                         <Label className='font-semibold mx-4 text-lg md:text-sm'>My Account</Label>
                         <Separator className='my-1' />
-                        <div className='flex items-center hover:bg-stone-200 dark:hover:bg-stone-700  px-2 py-1.5 rounded-md cursor-pointer' >
-                            <Label className='flex items-center gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-md md:text-sm cursor-pointer'>
-                                <FaUserGraduate className='cursor-auto' />
-                                Profile
-                            </Label>
-                        </div>
-                        <Separator className='my-1' />
+                        <Link to='/profile'>
+                            <div className='flex items-center hover:bg-stone-200 dark:hover:bg-stone-700 px-2 py-1.5 rounded-md cursor-pointer' >
+                                <Label className='flex items-center gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-md md:text-sm cursor-pointer'>
+                                    <FaUserGraduate className='cursor-auto' />
+                                    Profile
+                                </Label>
 
+
+                            </div>
+                        </Link>
+
+                        {auth?.roles?.some((role: string) => role === "staff" || role === "admin") &&
+                            <>
+                                <Separator className='my-1' />
+                                <Label className='font-semibold mx-4 text-lg md:text-sm'>Staff</Label>
+                                <Separator className='my-1' />
+                                <Link to='/issues'>
+                                    <div className='flex items-center hover:bg-stone-200 dark:hover:bg-stone-700  px-2 py-1.5 rounded-md cursor-pointer' >
+                                        <Label className='flex items-center gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-md md:text-sm cursor-pointer'>
+                                            <FaTriangleExclamation  className='cursor-auto' />
+                                            Issues
+                                        </Label>
+                                    </div>
+                                </Link>
+                                <Link to='/voices'>
+                                    <div className='flex items-center hover:bg-stone-200 dark:hover:bg-stone-700  px-2 py-1.5 rounded-md cursor-pointer' >
+                                        <Label className='flex items-center gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-md md:text-sm cursor-pointer'>
+                                            <LuAudioLines className='cursor-auto' />
+                                            Voices
+                                        </Label>
+                                    </div>
+                                </Link>
+                                <Link to='/users'>
+                                    <div className='flex items-center hover:bg-stone-200 dark:hover:bg-stone-700  px-2 py-1.5 rounded-md cursor-pointer' >
+                                        <Label className='flex items-center gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-md md:text-sm cursor-pointer'>
+                                            <FaUserGroup   className='cursor-auto' />
+                                            Users
+                                        </Label>
+                                    </div>
+                                </Link>
+                            </>
+                        }
+                        <Separator className='my-1' />
                         <Link to='/' onClick={handleLogout}>
                             <div className='flex items-center hover:bg-stone-200 dark:hover:bg-stone-700  px-2 py-1.5 rounded-md cursor-pointer' >
                                 <Label className='flex items-center gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-md md:text-sm cursor-pointer'>
@@ -117,7 +139,7 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { theme } = useTheme()
     const { auth } = useAuth();
-    const logout = useLogout();
+    const { logout } = useLogout();
     const navigate = useNavigate();
     const [isPopOpen, setIsPopOpen] = useState(false);
 

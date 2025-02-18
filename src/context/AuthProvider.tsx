@@ -5,6 +5,7 @@ type Auth = {
     studentNo?: string | null;
     roles: string[] | null;
     accessToken: string | null;
+    isTempPassword: boolean;
     isAuthenticated: boolean;
     isAuthenticating: boolean;
 };
@@ -25,7 +26,8 @@ const defaultAuth: Auth = {
     roles: null,
     accessToken: null,
     isAuthenticated:false,
-    isAuthenticating:true
+    isAuthenticating:true,
+    isTempPassword:false
 };
 
 const AuthContext = createContext<AuthProviderState>({

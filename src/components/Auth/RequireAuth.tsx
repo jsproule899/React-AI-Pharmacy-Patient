@@ -9,6 +9,7 @@ export interface AuthJwtPayload extends Partial<JwtPayload> {
     email?: string;
     studentNo?: string;
     roles?: string[];
+    tempPassword?: boolean;
 }
 
 const RequireAuth = ({ allowedRoles }: { allowedRoles: string[] }) => {

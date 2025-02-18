@@ -25,7 +25,7 @@ const ScenariosHeader = ({ props }: any) => {
 
     return (
         <div className="flex flex-wrap justify-start py-4 gap-4 items-center mx-4">
-            {props.auth?.roles?.some((role: string) => role === "staff" || role === "superUser") && (
+            {props.auth?.roles?.some((role: string) => role === "staff" || role === "admin") && (
                 <Link to="/scenarios/add" className="">
                     <Button>
                         {" "}

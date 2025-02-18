@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
-import { FaCirclePlay, FaCircleStop } from "react-icons/fa6";
+import { FaCircleNotch, FaCirclePlay, FaCircleStop } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 
@@ -109,7 +109,8 @@ function ScenarioForm() {
     const [voiceProvider, setVoiceProvider] = useState('');
     const [AIProvider, setAIProvider] = useState('');
     const [patientIsSelf, setpatientIsSelf] = useState(true);
-    const { indexPlaying, playSample, stopSample } = useSamplePlayer();
+    const { indexPlaying, isSampleLoading, playSample, stopSample } = useSamplePlayer();
+
     const { toast } = useToast()
 
     const navigate = useNavigate();
@@ -188,6 +189,7 @@ function ScenarioForm() {
                 axiosPrivate.put(`/api/scenario/${id}`, values).then((res) => {
                     if (res.status.toString().startsWith("20")) {
                         toast({
+                            variant:"success",
                             description: "Scenario successfully updated."
                         })
                     }
@@ -204,6 +206,7 @@ function ScenarioForm() {
                 }).then((res) => {
                     if (res.status.toString().startsWith("20")) {
                         toast({
+                            variant:"success",
                             description: "Scenario successfully added."
                         })
                     }
@@ -744,18 +747,25 @@ function ScenarioForm() {
                                     </Select>
                                     <FormMessage />
                                     <audio id={`audioPlayer`} />
-                                    {indexPlaying == -1
-                                        ? <FaCirclePlay className="text-qub-red cursor-pointer hover:text-qub-darkred" size={38} onClick={() =>
-                                            voices
-                                                ? playSample(voices.find(v => v.VoiceId == field.value), 0)
-                                                : toast({
-                                                    variant: "destructive",
-                                                    title: "Uh oh! Something went wrong.",
-                                                    description: "There was a problem loading the voice. Please try again.",
-                                                })
-                                        } />
-                                        : <FaCircleStop className="text-qub-red cursor-pointer hover:text-qub-darkred" size={38} onClick={() => stopSample()} />
+                                    {
+                                        indexPlaying === -1
+                                            ? <FaCirclePlay className="text-qub-red cursor-pointer hover:text-qub-darkred" size={38} onClick={() =>
+                                                voices
+                                                    ? playSample(voices.find(v => v.VoiceId == field.value), 0)
+                                                    : toast({
+                                                        variant: "destructive",
+                                                        title: "Uh oh! Something went wrong.",
+                                                        description: "There was a problem loading the voice. Please try again.",
+                                                    })
+                                            } />
+                                            : isSampleLoading
+                                                ? <FaCircleNotch className="text-qub-red cursor-pointer hover:text-qub-darkred animate-spin" size={38} />
+                                                : <FaCircleStop className="text-qub-red cursor-pointer hover:text-qub-darkred" size={38} onClick={() => stopSample()} />
                                     }
+
+
+
+
                                 </div>
                             </FormItem>
                         )}

@@ -6,6 +6,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
@@ -13,12 +14,11 @@ import useAuth from "@/hooks/useAuth"
 import { cn } from "@/lib/utils"
 import { jwtDecode } from "jwt-decode"
 import React, { useMemo, useRef, useState } from "react"
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6"
-import { useLocation, useNavigate } from "react-router"
+import { Link, useLocation, useNavigate } from "react-router"
 import { axiosPrivate } from "../../components/api/axios"
 import { AuthJwtPayload } from "../../components/Auth/RequireAuth"
 import { Checkbox } from "../../components/ui/checkbox"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import PasswordInput from "./PasswordInput"
 
 export function LoginForm({
     className,
@@ -33,7 +33,6 @@ export function LoginForm({
         readonly elements: FormElements
     }
 
-    const [passwordVisible, setPasswordVisible] = useState(false);
     const [errMsg, setErrMsg] = useState();
     const navigate = useNavigate();
     const location = useLocation();
@@ -62,12 +61,17 @@ export function LoginForm({
                 const role = decoded.roles;
                 const email = decoded.email;
                 const studentNo = decoded.studentNo;
+                const tempPassword = decoded.tempPassword;
+               
 
 
-                setAuth({ email: email || null, studentNo, roles: role || null, accessToken, isAuthenticated: true, isAuthenticating: false })
-                navigate(from, { replace: true })
+                setAuth({ email: email || null, studentNo, roles: role || null, accessToken, isAuthenticated: true, isAuthenticating: false, isTempPassword: tempPassword || false})
+                if (tempPassword) {navigate("/update-password", { state: { from: location }, replace: true })}
+                else {
+                    navigate(from, { replace: true })
+                }
             } else {
-                
+
                 toast({
                     variant: "destructive",
                     description: res.data.message
@@ -82,16 +86,10 @@ export function LoginForm({
                     description: err.message
                 })
             }
-        } finally{
+        } finally {
             LoginButton.current!.innerHTML = "Log in"
             LoginButton.current!.disabled = false;
         }
-    }
-
-    const togglePassword = () => {
-        let password = document.getElementById("password") as HTMLInputElement;
-        passwordVisible ? password.type = "password" : password.type = "text";
-        setPasswordVisible(!passwordVisible);
     }
 
     const togglePersist = () => {
@@ -137,23 +135,14 @@ export function LoginForm({
                             <div className="grid gap-2">
                                 <div className="flex items-center">
                                     <Label htmlFor="password">Password</Label>
-                                    <a
-                                        href="#"
+                                    <Link
+                                        to="/forgot-password"
                                         className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                                     >
                                         Forgot your password?
-                                    </a>
+                                    </Link>
                                 </div>
-                                <div className="relative">
-                                    <Input className="dark:border-1 dark:border-stone-50 pr-8" id="password" type="password" required />
-                                    <Button variant="link" className="absolute top-0 right-0 p-3" type="button" onClick={togglePassword}>
-                                        {!passwordVisible ?
-                                            <FaRegEye /> :
-                                            <FaRegEyeSlash />
-                                        }
-                                    </Button>
-
-                                </div>
+                                <PasswordInput id="password" />
 
                             </div>
 

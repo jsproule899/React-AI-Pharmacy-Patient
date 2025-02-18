@@ -13,7 +13,7 @@ import Spinner from "@/components/ui/Spinner";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
-import { Issue } from "@/types/issue";
+import { Issue } from '@/types/Issue';
 import { keepPreviousData, QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Axios } from "axios";
 import { useCallback, useEffect, useState } from "react";

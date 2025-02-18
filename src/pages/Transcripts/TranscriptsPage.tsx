@@ -69,7 +69,7 @@ function TranscriptsPage() {
   const { isPending, error, isError, data: transcripts } = useQuery({
     queryKey: ['transcripts'],
     queryFn: () =>
-      auth.roles?.includes("staff") || auth.roles?.includes("superUser")
+      auth.roles?.includes("staff") || auth.roles?.includes("admin")
         ? getAllTranscripts(axiosPrivate, navigate, location, queryClient)
         : getTranscriptsByStudent(axiosPrivate, navigate, location, queryClient, auth?.studentNo || ""),
     staleTime: 2 * 60 * 1000,
@@ -127,7 +127,7 @@ function TranscriptsPage() {
   })
 
   useLayoutEffect(() => {
-    if (!auth?.roles?.some(role => role === "staff" || role === "superUser")) {
+    if (!auth?.roles?.some(role => role === "staff" || role === "admin")) {
       setAllowedColumns(columns.filter(col => col.id !== 'remove'))
     }
   }, [auth.roles])

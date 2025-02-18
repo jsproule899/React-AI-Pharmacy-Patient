@@ -18,6 +18,12 @@ import PersistAuth from "./components/Auth/PersistAuth.tsx";
 import Unauthorized from "./pages/Unauthorized.tsx";
 import VoiceFormPage from "./pages/Voice/VoiceFormPage.tsx";
 import VoicePage from "./pages/Voice/VoicePage.tsx";
+import ForgotPassword from "./pages/Login/ForgotPassword.tsx";
+import UpdatePassword from "./pages/Login/UpdatePassword.tsx";
+import AddUsersPage from "./pages/Users/AddUsersPage.tsx";
+import UsersPage from "./pages/Users/UsersPage.tsx";
+import UserFormPage from "./pages/Users/UserFormPage.tsx";
+import ProfilePage from "./pages/Profile/ProfilePage.tsx";
 
 
 function App() {
@@ -41,25 +47,33 @@ function AppWithRouting() {
           <Route element={<PersistAuth />}>
             <Route path="/" element={<HomePage />} />
             {/*protected routes*/}
-            <Route element={<RequireAuth allowedRoles={['student', 'staff', 'superUser']} />}>
+            <Route element={<RequireAuth allowedRoles={['student', 'staff', 'admin']} />}>
               <Route path="scenarios" element={<ScenariosPage />} />
               <Route path="scenarios/:id" element={<ScenarioPage />} />
               <Route path="/transcripts" element={<TranscriptsPage />} />
               <Route path="/transcripts/:id" element={<TranscriptPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
-            {/*Staff/SU protected routes*/}
-            <Route element={<RequireAuth allowedRoles={['staff', 'superUser']} />}>
+            {/*Staff/admin protected routes*/}
+            <Route element={<RequireAuth allowedRoles={['staff', 'admin']} />}>
               <Route path="scenarios/add" element={<ScenarioFormPage />} />
               <Route path="scenarios/edit/:id" element={<ScenarioFormPage />} />
+
               <Route path="voices" element={<VoicePage />} />
               <Route path="voices/add" element={<VoiceFormPage />} />
-              <Route path="voices/edit/:id" element={<VoiceFormPage />} />
+              <Route path="voices/edit/:id" element={<VoiceFormPage />} />              
+              
+              <Route path="/users" element={<UsersPage/>}></Route>
+              <Route path="/users/add" element={<AddUsersPage/>}></Route>
+              <Route path="/users/edit/:id" element={<UserFormPage/>}></Route>
 
               <Route path="/issues" element={<IssuesPage />} />
             </Route>
 
             
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/update-password" element={<UpdatePassword />} />
 
             <Route path='/unauthorized' element={<Unauthorized />} />
             <Route path='*' element={<ErrorPage />} />
