@@ -19,7 +19,7 @@ import { Voice } from "@/types/Voice";
 import { keepPreviousData, QueryClient, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Axios } from "axios";
 import { useCallback, useEffect, useState } from "react";
-import { FaCirclePlay, FaCircleStop, FaPlus, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { FaCircleNotch, FaCirclePlay, FaCircleStop, FaPlus, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
 import { Link, Location, NavigateFunction, useLocation, useNavigate } from "react-router";
 
 function VoicePage() {
@@ -28,7 +28,7 @@ function VoicePage() {
     const location = useLocation();
     const { auth } = useAuth();
     const size = useScreenSize();
-    const { indexPlaying, playSample, stopSample } = useSamplePlayer();
+    const { indexPlaying, isSampleLoading, playSample, stopSample } = useSamplePlayer();
     const queryClient = useQueryClient()
     const { isPending, data: voices } = useQuery<Voice[]>({
         queryKey: ['voices'],
@@ -155,7 +155,7 @@ function VoicePage() {
             <audio id={`audioPlayer`} />
             <div className="w-11/12 mx-auto m-4">
                 <div className="flex flex-wrap justify-start py-4 gap-4 ">
-                    {auth?.roles?.some(role => role === "staff" || role === "superUser") && (
+                    {auth?.roles?.some(role => role === "staff" || role === "admin") && (
                         <Link to="/voices/add" className="">
                             <Button>
                                 {" "}
@@ -165,9 +165,10 @@ function VoicePage() {
                         </Link>
                     )
                     }
-                    <div className="flex flex-col sm:flex-row  items-center gap-2 order-1">
-
-                        <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">Provider</p>
+                    <div className="flex items-center gap-2 order-1">
+                        <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">
+                            Provider
+                        </p>
                         <Select
                             value={filters.provider}
                             onValueChange={(value) => {
@@ -236,10 +237,12 @@ function VoicePage() {
                                         <TableCell>{voice.VoiceId}</TableCell>
 
                                         <TableCell >
-
-                                            {indexPlaying !== index
-                                                ? <FaCirclePlay className="text-qub-red cursor-pointer hover:text-qub-darkred" size={32} onClick={() => playSample(voice, index)} />
-                                                : <FaCircleStop className="text-qub-red cursor-pointer hover:text-qub-darkred" size={32} onClick={() => stopSample()} />
+                                            {
+                                                indexPlaying !== index
+                                                    ? <FaCirclePlay className="text-qub-red cursor-pointer hover:text-qub-darkred" size={32} onClick={() => playSample(voice, index)} />
+                                                    : isSampleLoading
+                                                        ? <FaCircleNotch className="text-qub-red cursor-pointer hover:text-qub-darkred animate-spin" size={32} />
+                                                        : <FaCircleStop className="text-qub-red cursor-pointer hover:text-qub-darkred" size={32} onClick={() => stopSample()} />
                                             }
 
 

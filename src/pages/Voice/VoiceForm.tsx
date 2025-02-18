@@ -82,6 +82,7 @@ function VoiceForm() {
                 axiosPrivate.put(`/api/voice/${id}`, values).then((res) => {
                     if (res.status.toString().startsWith("20")) {
                         toast({
+                            variant:"success",
                             description: "Voice successfully updated."
                         })
                     }
@@ -98,6 +99,7 @@ function VoiceForm() {
                 }).then((res) => {
                     if (res.status.toString().startsWith("20")) {
                         toast({
+                            variant:"success",
                             description: "Voice successfully added."
                         })
                     }
