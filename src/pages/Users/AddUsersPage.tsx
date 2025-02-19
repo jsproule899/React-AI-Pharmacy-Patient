@@ -61,10 +61,11 @@ const ImportUsersCSV = () => {
     const [importResults, setImportResults] = useState<ImportResult[]>([]);
 
     const handleFileUpload = (e: any) => {
-        setFile(e.target.files[0]);
+        const file = e.target.files[0];
         if (file && file.type === 'text/csv') {
+            setFile(file);
+            setImportResults([]);
             const reader = new FileReader();
-
             reader.onload = () => {
                 const fileContent = reader.result as string;
                 var rows = fileContent.split('\n')
@@ -106,6 +107,7 @@ const ImportUsersCSV = () => {
             {importResults.length !== 0 && (
                 <>
                     <h2 className="font-bold text-center  text-stone-950 dark:text-stone-50" >CSV import results</h2>
+                    {file && <h2 className="font-bold text-center  text-stone-950 dark:text-stone-50" >from: {file?.name}</h2>}
                     <div className="mt-4 border border-gray-300 dark:border-stone-700 rounded-lg p-4 max-w-5xl mx-auto bg-gray-50 dark:bg-stone-800 shadow-md">
                         <Table>
                             <TableHeader>
