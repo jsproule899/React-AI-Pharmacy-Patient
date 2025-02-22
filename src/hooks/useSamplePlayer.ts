@@ -18,8 +18,7 @@ const useSamplePlayer = () => {
         if (audioPlayer) {
             try {
                 setIsSampleLoading(true);
-                let url = `/api/tts/${voice?.Provider.replace(' ', '').toLowerCase().trim()}`
-                voice?.Provider == "Unreal Speech" ? url = url.concat("/stream") : null
+                let url = `/api/tts/${voice?.Provider.replace(' ', '').toLowerCase().trim()}`              
                 let sampleText = "The quick brown fox jumps over the lazy dog."
 
                 // Create a unique key for the cache based on the URL and request payload
@@ -38,7 +37,7 @@ const useSamplePlayer = () => {
                 }
 
                 // If not in the cache, make the API request
-                const res = await axiosPrivate.post<ArrayBuffer>(url, { text: sampleText, voice: voice?.VoiceId }, {
+                const res = await axiosPrivate.post<ArrayBuffer>(url, { text: sampleText, voice: voice?.VoiceId, mode:"stream"}, {
                     validateStatus: (status: number) => status <= 400,
                     responseType: 'arraybuffer'
                 });
