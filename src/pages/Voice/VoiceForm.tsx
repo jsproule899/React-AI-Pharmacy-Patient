@@ -27,7 +27,7 @@ const formSchema = z.object({
     Name: z.string().max(100).min(1, "Required"),
     Description: z.string().max(250).min(1, "Required"),
     VoiceId: z.string().max(50).min(1, "Required"),
-    Provider: z.enum(["Unreal Speech", "Eleven Labs"])
+    Provider: z.enum(["Unreal Speech", "Eleven Labs", "OpenAI"])
 
 })
 
@@ -196,6 +196,7 @@ function VoiceForm() {
 
                                     <SelectItem value="Unreal Speech">Unreal Speech</SelectItem>
                                     <SelectItem value="Eleven Labs">Eleven Labs</SelectItem>
+                                    <SelectItem value="OpenAI">OpenAI</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />
