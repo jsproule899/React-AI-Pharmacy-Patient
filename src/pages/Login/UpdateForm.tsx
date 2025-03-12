@@ -100,7 +100,7 @@ function UpdateForm() {
     })
 
     useEffect(() => {
-        auth.isTempPassword ? setErrMsg("You are using a tempory password, please change your password.") : ""
+        auth.isTempPassword && setErrMsg("You are using a temporary password, please change your password.")
     }, [])
 
     useEffect(() => {

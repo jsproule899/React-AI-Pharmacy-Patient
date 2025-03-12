@@ -283,7 +283,7 @@ const ProfilePage = () => {
             <CardHeader>
               <CardTitle>Log Out Everywhere</CardTitle>
               <CardDescription>
-              Log you out of all sessions. If you believe your account has been compromised, we recommend you 
+              Log out of all sessions. If you believe your account has been compromised, we recommend you 
                 <p className="hover:underline text-qub-red cursor-pointer w-fit inline mx-1" onClick={()=>{setTab("password")}}>
                   change your password.
                 </p>

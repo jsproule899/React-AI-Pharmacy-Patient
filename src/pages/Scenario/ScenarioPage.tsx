@@ -14,7 +14,7 @@ function ScenarioPage() {
     const [isUploading, setIsUploading] = useState(false);
     const isEmbeddedRoute = location.pathname.startsWith('/embedded');
     const axiosPrivate = useAxiosPrivate();
-    const {auth} = useAuth();
+    const { auth } = useAuth();
 
 
     const { unityProvider, isLoaded, UNSAFE__unityInstance, requestFullscreen, sendMessage, addEventListener, removeEventListener } = useUnityContext({
@@ -32,7 +32,7 @@ function ScenarioPage() {
         let scenarioId = paths[paths.length - 1];
         setIsUploading(true);
         try {
-            axiosPrivate.post('/api/transcript', { Filename: filename, Data: data, Scenario: scenarioId, Student: studentNo}).then(() => {
+            axiosPrivate.post('/api/transcript', { Filename: filename, Data: data, Scenario: scenarioId, Student: studentNo }).then(() => {
                 setIsUploading(false);
             })
         } catch (error) {

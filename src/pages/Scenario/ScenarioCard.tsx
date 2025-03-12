@@ -6,7 +6,7 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import { useEffect, useRef, useState } from 'react';
-import { FaCirclePlay, FaCode, FaRegCopy, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
+import { FaCirclePlay, FaCode, FaEye, FaEyeSlash, FaRegCopy, FaRegPenToSquare, FaTrashCan } from "react-icons/fa6";
 
 import {
   Dialog,
@@ -35,11 +35,13 @@ import { Link } from 'react-router';
 
 interface ScenarioProps {
   scenario: Scenario;
-  onScenarioDeleted: (id: string) => void; // Callback to re-fetch the scenarios
+  onScenarioDeleted: (id: string) => void; 
+  onScenarioVisibilityChange: (id: string, visible: boolean) => void; 
 }
 
 
-function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
+function ScenarioCard({ scenario, onScenarioDeleted, onScenarioVisibilityChange }: ScenarioProps) {
+  const [isVisibleDialogOpen, setIsVisibleDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false);
   const [iframeWidth, setIframeWidth] = useState("100%");
@@ -112,6 +114,15 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
     }
   };
 
+  const handleVisibilityChange = async () => {
+    try {
+      onScenarioVisibilityChange(scenario._id, scenario.Visible);
+      setIsVisibleDialogOpen(false);
+    } catch (error) {
+      console.error("Error updating the visibility of the scenario:", error);
+    }
+  };
+
   return (
     <Card className='inline-block m-4  '>
       <CardHeader className='relative text-xl m-a'>
@@ -134,6 +145,28 @@ function ScenarioCard({ scenario, onScenarioDeleted }: ScenarioProps) {
 
         {auth?.roles?.some(role => role === "staff" || role === "admin") &&
           <div className='flex justify-between'>
+             <Dialog open={isVisibleDialogOpen} onOpenChange={setIsVisibleDialogOpen}>
+                <DialogTrigger asChild><button>{scenario.Visible ? <FaEye className='h-6 w-6 mx-2 cursor-pointer' />: <FaEyeSlash className='h-6 w-6 mx-2 cursor-pointer' />}</button></DialogTrigger>
+                <DialogContent className="w-fit">
+                  <DialogHeader>
+                    <DialogTitle className='text-black dark:text-white'>{scenario.Visible ? "Hide this scenario?" : "Make this scenario visible?" }</DialogTitle>
+                    <DialogDescription>
+                      The scenario will be {scenario.Visible ? "hidden from" : "visible for" } students
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="sm:justify-center">
+                    <DialogClose asChild>
+                      <Button type="button" variant="outline" className='mb-1 px-8 mx-2'>
+                        Close
+                      </Button>
+                    </DialogClose>
+                    <Button type="button" variant="default" className='mb-1 px-8 mx-2' onClick={() => { handleVisibilityChange() }}>
+                    {scenario.Visible ? "Hide" : "Show"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+             
             <Link to={{ pathname: "/scenarios/edit/" + scenario._id }} >
               <FaRegPenToSquare className='h-6 w-6 mx-2 cursor-pointer' />
             </Link>

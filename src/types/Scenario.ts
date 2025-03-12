@@ -22,6 +22,7 @@ export interface Scenario {
   TTS: string;
   Voice: string;
   Avatar: string;
+  Visible: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

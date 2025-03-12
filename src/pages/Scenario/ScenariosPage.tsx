@@ -20,6 +20,7 @@ import { Link, Location, NavigateFunction, useLocation, useNavigate } from "reac
 import CardSkeleton from "./CardSkeleton";
 import ScenarioCard from "./ScenarioCard";
 
+
 const ScenariosHeader = ({ props }: any) => {
     const size = useScreenSize();
 
@@ -59,14 +60,37 @@ const ScenariosHeader = ({ props }: any) => {
                     </SelectContent>
                 </Select>
             </div>
+            {props.auth?.roles?.some((role: string) => role === "staff" || role === "admin") && (
+                <div className="flex items-center gap-2 order-2">
+                    <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">
+                        Visibility
+                    </p>
+                    <Select
+                        value={props.filters.visibility}
+                        onValueChange={(value) => {
+                            props.setFilters((prev: any) => ({ ...prev, visibility: value }));
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-[100px]">
+                            <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value={"all"}>All</SelectItem>
+                            <SelectItem value={"Shown"}>Shown</SelectItem>
+                            <SelectItem value={"Hidden"}>Hidden</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+            )}
             <Input
                 placeholder="Search..."
                 value={props.filters.search || ""}
                 onChange={(e) =>
                     props.setFilters((prev: any) => ({ ...prev, search: e.target.value }))
                 }
-                className="flex items-center gap-2 max-w-sm order-3 md:order-2"
+                className="flex items-center gap-2 max-w-sm order-4 md:order-3"
             />
+
         </div>
     );
 };
@@ -103,7 +127,7 @@ function ScenariosPage() {
     const queryClient = useQueryClient()
     const { isPending, data: scenarios } = useQuery<Scenario[]>({
         queryKey: ['scenarios'],
-        queryFn: () => getScenarios(navigate, location, queryClient, axiosPrivate),
+        queryFn: () => getScenarios(navigate, location, queryClient, axiosPrivate).then((scenarios) => auth?.roles?.some(role => role === "staff" || role === "admin") ? scenarios : scenarios.filter((scenario: Scenario) => scenario.Visible === true)),
         staleTime: 2 * 60 * 1000,
         placeholderData: keepPreviousData,
 
@@ -113,6 +137,7 @@ function ScenariosPage() {
     const [filters, setFilters] = useState({
         theme: "",
         search: "",
+        visibility: ""
     });
     const [pagination, setPagination] = useState({
         pageIndex: 0,
@@ -124,16 +149,7 @@ function ScenariosPage() {
 
 
     const onScenarioDeleted = (id: string) => {
-        try {
-            deleteScenarioMutation.mutate(id)
-        } catch (error) {
-            console.error("Error deleting scenario:", error);
-            toast({
-                variant: "destructive",
-                title: "Uh oh! Something went wrong.",
-                description: "There was a problem deleting the scenario. Please try again.",
-            })
-        }
+        deleteScenarioMutation.mutate(id);
     };
 
     const deleteScenarioMutation = useMutation<void, Error, string>({
@@ -148,7 +164,54 @@ function ScenariosPage() {
             queryClient.setQueryData<Scenario[]>(["scenarios"], (oldScenarios = []) =>
                 oldScenarios.filter((scenario) => scenario._id !== id)
             );
+            toast({
+                variant: "success",
+                title: "Success.",
+                description: "The scenario has been deleted.",
+            })
         },
+        onError: (error) => {
+            console.error("Error deleting scenario:", error);
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem deleting the scenario. Please try again.",
+            })
+        }
+    });
+
+
+    const onScenarioVisibilityChange = (id: string, visible: boolean) => {
+        visibilityScenarioMutation.mutate({ id, visible });
+    };
+
+    const visibilityScenarioMutation = useMutation<void, Error, { id: string, visible: boolean }>({
+        mutationFn: async ({ id, visible }) => {
+            const res = await axiosPrivate.put(`/api/scenario/${id}`, { Visible: !visible }, {
+                validateStatus: (status) => { return status <= 400 }
+            });
+            return res.data;
+
+        },
+        onSuccess: (_, { id, visible }) => {
+            queryClient.setQueryData<Scenario[]>(["scenarios"], (oldScenarios = []) =>
+                oldScenarios.map((scenario) => scenario._id === id ? { ...scenario, Visible: !visible } : scenario)
+
+            );
+            toast({
+                variant: "success",
+                title: "Success.",
+                description: "The visibility of the scenario has been changed.",
+            })
+        },
+        onError: (error) => {
+            console.error("Error changing the visibility of the scenario:", error);
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: "There was a problem changing the visibility of the scenario. Please try again.",
+            })
+        }
     });
 
     const filterScenarios = useCallback(() => {
@@ -170,6 +233,17 @@ function ScenariosPage() {
                     scenario.Name.toLowerCase().includes(filters.search.toLowerCase()),
             );
         }
+        if (filters.visibility !== "all") {
+            switch (filters.visibility) {
+                case "Hidden": filteredScenarios = filteredScenarios.filter(
+                    (scenario) => scenario.Visible === false)
+                    break;
+                case "Shown": filteredScenarios = filteredScenarios.filter(
+                    (scenario) => scenario.Visible === true)
+                    break;
+            }
+        }
+
 
         // Update filtered list
         setFiltered(filteredScenarios);
@@ -198,13 +272,14 @@ function ScenariosPage() {
             <ScenariosHeader props={{ themes, filters, setFilters, auth }} />
             {isPending ? <CardSkeleton /> :
                 scenarios?.length !== 0 ? (
-                    <div className="flex flex-wrap mb-16">
+                    <div className="flex flex-wrap mb-24">
                         {filteredAndPaginated.map((scenario, index) => {
                             return (
                                 <ScenarioCard
                                     key={index}
                                     scenario={scenario}
                                     onScenarioDeleted={onScenarioDeleted}
+                                    onScenarioVisibilityChange={onScenarioVisibilityChange}
                                 />
                             );
                         })}
@@ -227,8 +302,7 @@ function ScenariosPage() {
                     </div>
                 )
             }
-
-            <div className="flex flex-grow items-center justify-center gap-2 bottom-16 left-0 right-0">
+            <div className="flex items-center justify-center gap-2 absolute bottom-24 right-0 left-0">
                 <p className="text-sm font-medium  text-stone-950 dark:text-stone-50">
                     Rows
                 </p>

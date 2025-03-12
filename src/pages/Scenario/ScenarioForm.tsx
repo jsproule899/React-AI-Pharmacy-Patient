@@ -49,6 +49,7 @@ const otherPersonSchema = z.object({
 
 const formSchema = z.object({
     Theme: z.string().max(100).min(1, "Required"),
+    Visible: z.boolean().optional(),
     Context: z.string().max(250).min(1, "Required"),
     Name: z.string().max(50).min(1, "Required"),
     Age: z.string({
@@ -120,6 +121,7 @@ function ScenarioForm() {
         resolver: zodResolver(formSchema),
         defaultValues: {
             Theme: "",
+            Visible: true,
             Context: "",
             Name: "",
             Age: "",
@@ -189,7 +191,7 @@ function ScenarioForm() {
                 axiosPrivate.put(`/api/scenario/${id}`, values).then((res) => {
                     if (res.status.toString().startsWith("20")) {
                         toast({
-                            variant:"success",
+                            variant: "success",
                             description: "Scenario successfully updated."
                         })
                     }
@@ -206,7 +208,7 @@ function ScenarioForm() {
                 }).then((res) => {
                     if (res.status.toString().startsWith("20")) {
                         toast({
-                            variant:"success",
+                            variant: "success",
                             description: "Scenario successfully added."
                         })
                     }
@@ -254,21 +256,44 @@ function ScenarioForm() {
         <Form {...form} >
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-4 mx-10 mb-4 justify-center">
 
+                <div className='flex flex-wrap gap-4 items-end'>
+                    <FormField
+                        control={form.control}
+                        name="Theme"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Theme</FormLabel>
+                                <FormControl>
+                                    <Input type="text" placeholder="Coughs & Colds" {...field} />
+                                </FormControl>
 
-                <FormField
-                    control={form.control}
-                    name="Theme"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Theme</FormLabel>
-                            <FormControl>
-                                <Input type="text" placeholder="Coughs & Colds" {...field} />
-                            </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                    <div className='flex items-center w-fit h-fit gap-4 rounded-md border bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 p-2.5 shadow'>
+                        <FormField
+                            control={form.control}
+                            name="Visible"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0 ">
+                                    <div className="space-y-1 leading-none ">
+                                        <FormLabel>
+                                            Visible?
+                                        </FormLabel>
+                                    </div>
+                                    <FormControl>
+                                        <Checkbox
+                                            checked={field.value ?? false}
+                                            onCheckedChange={(value) => { field.onChange(value); }}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
                 <FormField
                     control={form.control}
                     name="Context"
@@ -585,29 +610,31 @@ function ScenarioForm() {
                     )}
                 />
 
-                <FormField
-                    control={form.control}
-                    name="Outcome"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Correct Outcome</FormLabel>
-                            <FormControl>
-                                <RadioGroup defaultValue="Treat" onValueChange={field.onChange}
-                                    className='flex flex-row'>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="Treat" id="Treat" />
-                                        <Label htmlFor="Treat">Treat</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="Refer" id="Refer" />
-                                        <Label htmlFor="Refer">Refer</Label>
-                                    </div>
-                                </RadioGroup></FormControl>
+                <div className='flex items-center w-fit h-fit rounded-md border bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 p-3 shadow'>
+                    <FormField
+                        control={form.control}
+                        name="Outcome"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Correct Outcome</FormLabel>
+                                <FormControl>
+                                    <RadioGroup defaultValue="Treat" onValueChange={field.onChange}
+                                        className='flex flex-row'>
+                                        <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="Treat" id="Treat" />
+                                            <Label htmlFor="Treat">Treat</Label>
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <RadioGroupItem value="Refer" id="Refer" />
+                                            <Label htmlFor="Refer">Refer</Label>
+                                        </div>
+                                    </RadioGroup></FormControl>
 
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
 
 
 
