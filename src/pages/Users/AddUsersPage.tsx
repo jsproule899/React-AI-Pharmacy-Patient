@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { FaArrowLeft, FaCheck, FaXmark } from "react-icons/fa6";
+import { FaArrowLeft, FaCheck, FaSpinner, FaXmark } from "react-icons/fa6";
 import { Link } from "react-router";
 import UserForm from "./UserForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 
 
 interface ImportResult {
@@ -59,24 +59,24 @@ const ImportUsersCSV = () => {
     const queryClient = useQueryClient()
     const axiosPrivate = useAxiosPrivate();
     const [importResults, setImportResults] = useState<ImportResult[]>([]);
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
     const handleFileUpload = (e: any) => {
         const file = e.target.files[0];
         if (file && file.type === 'text/csv') {
             setFile(file);
             setImportResults([]);
+            setIsProcessing(true);
             const reader = new FileReader();
             reader.onload = () => {
                 const fileContent = reader.result as string;
                 var rows = fileContent.split('\n')
-                if (rows[0].includes("email")) rows.shift();
+                if (rows[0].toLowerCase().includes("email")) rows.shift();
                 rows = rows.filter(row => row !== "")
                 rows.forEach(async row => {
                     const col = row.split(',', -1)
                     console.log(col);
                     try {
-
-
                         const res = await axiosPrivate.post('/api/auth/register', { Email: col[0].trim(), StudentNo: col[1].trim(), Staff: !!col[2].trim() },
                             {
                                 headers: { 'Content-Type': 'application/json' },
@@ -87,10 +87,11 @@ const ImportUsersCSV = () => {
                             setImportResults(prev => [...prev, { user: col[1].trim(), status: "Imported", message: "Account created, welcome email successfully sent." }])
                         }
                     } catch (err: any) {
-                        setImportResults(prev => [...prev, { user: col[1].trim(), status: "Failed", message: err.response.data.message }])
+                        setImportResults(prev => [...prev, { user: col[1].trim(), status: "Failed", message: err.response.data.message }].sort((a, b) => (a.user as any) - (b.user as any)))
+
                     }
                 })
-
+                setIsProcessing(false);
             };
 
             reader.readAsText(file);
@@ -103,7 +104,7 @@ const ImportUsersCSV = () => {
     return (
         <>
             <Input className="mb-4 p-2 border rounded max-w-96 mx-auto " type="file" accept=".csv" onChange={handleFileUpload} ></Input>
-
+            {isProcessing && <FaSpinner className='h-9 w-9 mx-6 cursor-wait justify-self-center animate-spin text-stone-950 dark:text-stone-50' />}
             {importResults.length !== 0 && (
                 <>
                     <h2 className="font-bold text-center  text-stone-950 dark:text-stone-50" >CSV import results</h2>

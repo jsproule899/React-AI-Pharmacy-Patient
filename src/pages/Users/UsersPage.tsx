@@ -104,7 +104,7 @@ function UsersPage() {
         }
 
         // Update filtered list
-        setFiltered(filteredUsers);
+        setFiltered(filteredUsers.sort((a, b) => (a.StudentNo as any) - (b.StudentNo as any)));
 
         // Calculate pagination values
         const totalPages = Math.ceil(filteredUsers.length / pagination.pageSize);
@@ -244,11 +244,11 @@ function UsersPage() {
                     <TableHeader >
                         <TableRow>
                             <TableHead className="pl-10 w-60">Student Number</TableHead>
-                            <TableHead className="w-2/12">Email</TableHead>
-                            <TableHead className="w-72">Academic Year</TableHead>
-                            <TableHead className="">Roles</TableHead>
-                            <TableHead className="text-center">Edit</TableHead>
-                            <TableHead className=" text-center w-">Remove</TableHead>
+                            <TableHead className="w-4/12">Email</TableHead>
+                            <TableHead className="w-2/12">Academic Year</TableHead>
+                            <TableHead className="w-2/12">Roles</TableHead>
+                            <TableHead className="w-1/12 text-center">Edit</TableHead>
+                            <TableHead className="w-1/12 text-center">Remove</TableHead>
 
                         </TableRow>
                     </TableHeader>
@@ -270,15 +270,15 @@ function UsersPage() {
 
 
                                     <TableCell >
-                                        <Link to={{ pathname: `/users/edit/${user._id}` }} >
-                                            <FaUserPen  className='h-6 w-6 cursor-pointer justify-self-center' />
+                                        <Link to={{ pathname: `/users/edit/${user._id}` }} className="block w-fit mx-auto" >
+                                            <FaUserPen className='h-6 w-6 cursor-pointer justify-self-center' />
                                         </Link>
                                     </TableCell>
 
                                     <TableCell >
                                         <Dialog>
                                             <DialogTrigger asChild >
-                                                <button className="w-full"><FaUserMinus  className='h-6 w-6 cursor-pointer justify-self-center' /></button>
+                                                <button className="block w-fit mx-auto"><FaUserMinus className='h-6 w-6 cursor-pointer justify-self-center' /></button>
                                             </DialogTrigger>
                                             <DialogContent>
                                                 <DialogHeader>
