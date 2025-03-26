@@ -38,6 +38,8 @@ const claudeModels = ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "cl
 
 const deepSeekModels = ["deepseek-chat"]
 
+const AVATARS = ["female_01", "female_02", "female_03", "female_04", "female_05", "female_06", "female_07", "male_01", "male_02", "male_03", "male_04", "male_05", "nonbinary_01", "nonbinary_02", "nonbinary_03"] as const;
+
 
 const otherPersonSchema = z.object({
     Name: z.string().optional(),
@@ -74,6 +76,7 @@ const formSchema = z.object({
     Model: z.string().min(1, "Required"),
     TTS: z.string().min(1, "Required"),
     Voice: z.string().min(1, "Required"),
+    Avatar: z.enum(AVATARS)
 }).superRefine(
     ({ Self, Other_Person }, refinementContext) => {
         if (!Self && Other_Person) {
@@ -110,7 +113,9 @@ function ScenarioForm() {
     const [voiceProvider, setVoiceProvider] = useState('');
     const [AIProvider, setAIProvider] = useState('');
     const [patientIsSelf, setpatientIsSelf] = useState(true);
+    const [selectedAvatar, setSelectedAvatar] = useState("female_01")
     const { indexPlaying, isSampleLoading, playSample, stopSample } = useSamplePlayer();
+
 
     const { toast } = useToast()
 
@@ -143,6 +148,7 @@ function ScenarioForm() {
             Emotion: "",
             AdditionalInfo: "",
             Outcome: "Treat",
+            Avatar: "female_01"
         },
     })
 
@@ -170,9 +176,7 @@ function ScenarioForm() {
                     setAIProvider(response.data.AI)
                     setVoiceProvider(response.data.TTS)
                     setpatientIsSelf(response.data.Self)
-
-
-
+                    setSelectedAvatar(response.data.Avatar)
                 })
                 .catch((error) => {
                     console.error("Error fetching scenario data", error);
@@ -772,7 +776,7 @@ function ScenarioForm() {
                                             })}
                                         </SelectContent>
                                     </Select>
-                                    <FormMessage />
+
                                     <audio id={`audioPlayer`} />
                                     {
                                         indexPlaying === -1
@@ -794,13 +798,48 @@ function ScenarioForm() {
 
 
                                 </div>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
 
+
+
+                </section>
+                <section>
+                    <FormField
+                        control={form.control}
+                        name="Avatar"
+                        render={({ field }) => (
+                            <FormItem className='my-2 sm:mx-2'>
+                                <FormLabel >Avatar</FormLabel>
+                                <FormControl>
+                                    <RadioGroup
+                                        onValueChange={field.onChange}
+                                        value={selectedAvatar}
+                                        defaultValue={selectedAvatar}
+                                        className="flex flex-wrap justify-center space-y-1" >
+                                        {AVATARS.map((avatar, i) => {
+                                            return (
+                                                <FormItem key={i} className="flex items-center space-x-3 space-y-0 cursor-pointer">
+                                                    <FormControl>
+                                                        <RadioGroupItem value={avatar} className="hidden" />
+                                                    </FormControl>
+                                                    <div id="img-container" className={`rounded-full h-24 w-24 overflow-hidden bg-white dark:bg-stone-800 border-solid border-2 hover:border-qub-red ${selectedAvatar === avatar ? "border-qub-red dark:border-qub-darkred border-4" : "border-stone-500"}`} onClick={() => {setSelectedAvatar(avatar); form.setValue("Avatar", avatar)}}>
+                                                        <img src={`/img/avatar_${avatar}.png`} alt="Image" className="h-44 p-1 object-cover" />
+                                                    </div>
+                                                </FormItem>
+                                            )
+                                        })}
+                                    </RadioGroup>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
                 </section>
 
-                <div className='flex-col flex md:flex-row gap-x-2'>
+
+                <div className='flex-col flex md:flex-row gap-x-2 justify-center'>
                     <Button className="flex min-w-24 mx-12 my-2 md:mx-2" type="submit">{id ? "Update" : "Create"}</Button>
                     <Button variant="destructive" className="flex min-w-24 my-2 mx-12 md:mx-2" type='button' onClick={() => navigate(-1)}>Cancel</Button>
                 </div>
