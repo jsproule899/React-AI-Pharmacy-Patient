@@ -1,7 +1,7 @@
 import useAuth from '@/hooks/useAuth';
 import useLogout from '@/hooks/useLogout';
 import { Suspense, useState } from 'react';
-import { FaArrowRightToBracket, FaTriangleExclamation, FaUserGraduate, FaUserGroup } from 'react-icons/fa6';
+import { FaArrowRightToBracket, FaMicrochip, FaTriangleExclamation, FaUserGraduate, FaUserGroup } from 'react-icons/fa6';
 import { LuAudioLines } from "react-icons/lu";
 import { Link, NavLink, useNavigate } from 'react-router';
 import logoDark from '../../assets/QUB SoP Logo-dark.png';
@@ -90,7 +90,15 @@ const NavUserMenu = ({ auth, isPopOpen, setIsPopOpen, handleLogout, small }: any
                                         </Label>
                                     </div>
                                 </Link>
-                                <Link to='/voices'>
+                                <Link to='/models'>
+                                    <div className='flex items-center hover:bg-stone-200 dark:hover:bg-stone-700  px-2 py-1.5 rounded-md cursor-pointer' >
+                                        <Label className='flex items-center gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-md md:text-sm cursor-pointer'>
+                                            <FaMicrochip  className='cursor-auto' />
+                                           AI Models
+                                        </Label>
+                                    </div>
+                                </Link>
+                                  <Link to='/voices'>
                                     <div className='flex items-center hover:bg-stone-200 dark:hover:bg-stone-700  px-2 py-1.5 rounded-md cursor-pointer' >
                                         <Label className='flex items-center gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-md md:text-sm cursor-pointer'>
                                             <LuAudioLines className='cursor-auto' />

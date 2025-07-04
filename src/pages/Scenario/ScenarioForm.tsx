@@ -20,6 +20,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/hooks/use-toast";
 import useAxiosPrivate from "@/hooks/useAxiosPrivate";
 import useSamplePlayer from "@/hooks/useSamplePlayer";
+import { Model } from "@/types/Model";
 import { Voice } from "@/types/Voice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,14 +30,6 @@ import { FaCircleNotch, FaCirclePlay, FaCircleStop } from "react-icons/fa6";
 import { useNavigate, useParams } from "react-router";
 import { z } from "zod";
 
-
-const AIProviders = ["OpenAI", "Claude", "DeepSeek"]
-
-const openAIModels = ["gpt-4o", "gpt-4o-mini", "chatgpt-4o-latest"]
-
-const claudeModels = ["claude-3-haiku-20240307", "claude-3-sonnet-20240229", "claude-3-5-haiku-20241022", "claude-3-5-sonnet-20241022", "claude-3-opus-20240229"]
-
-const deepSeekModels = ["deepseek-chat"]
 
 const AVATARS = ["female_01", "female_02", "female_03", "female_04", "female_05", "female_06", "female_07", "male_01", "male_02", "male_03", "male_04", "male_05", "nonbinary_01", "nonbinary_02", "nonbinary_03"] as const;
 
@@ -110,8 +103,10 @@ function ScenarioForm() {
     const [scenarioData, setScenarioData] = useState<FormValues | null>(null);
     const [voices, setVoices] = useState<Voice[]>([]);
     const [voiceProviders, setVoiceProviders] = useState<string[]>([]);
-    const [voiceProvider, setVoiceProvider] = useState('');
-    const [AIProvider, setAIProvider] = useState('');
+    const [voiceProvider, setVoiceProvider] = useState("");
+    const [models, setModels] = useState<Model[]>([]);
+    const [AIProviders, setAIProviders] = useState<string[]>([]);
+    const [AIProvider, setAIProvider] = useState("");
     const [patientIsSelf, setpatientIsSelf] = useState(true);
     const [selectedAvatar, setSelectedAvatar] = useState("female_01")
     const { indexPlaying, isSampleLoading, playSample, stopSample } = useSamplePlayer();
@@ -159,6 +154,15 @@ function ScenarioForm() {
                 const fetchedVoices: Voice[] = response.data
                 setVoices(fetchedVoices)
                 setVoiceProviders([...new Set(fetchedVoices?.map(voice => voice.Provider))])
+            }).catch((err) => {
+                console.log(err.message);
+            })
+
+        axiosPrivate.get('/api/model/')
+            .then((response) => {
+                const fetchedModels: Model[] = response.data
+                setModels(fetchedModels)
+                setAIProviders([...new Set(fetchedModels?.map(model => model.Provider))])
             }).catch((err) => {
                 console.log(err.message);
             })
@@ -236,18 +240,6 @@ function ScenarioForm() {
         }
     };
 
-
-    const renderModelOptions = () => {
-        if (AIProvider === AIProviders[0]) {
-            return openAIModels;
-        } else if (AIProvider === AIProviders[1]) {
-            return claudeModels;
-        } else if (AIProvider === AIProviders[2]) {
-            return deepSeekModels;
-        } else {
-            return ["Select Provider"]; // Default to an empty array if no provider is selected
-        }
-    };
 
     if (id && !scenarioData) {
         return <Spinner />;
@@ -681,7 +673,7 @@ function ScenarioForm() {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel >AI Provider</FormLabel>
-                                <Select onValueChange={(value) => { setAIProvider(value); form.setValue("Model", ""); field.onChange(value) }} defaultValue={field.value}>
+                                <Select onValueChange={(value) => { setAIProvider(value); form.setValue("Model", ""); field.onChange(value) }} defaultValue={field.value} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger className="min-w-[100px] ">
                                             <SelectValue placeholder="AI" />
@@ -714,9 +706,13 @@ function ScenarioForm() {
                                     </FormControl>
                                     <SelectContent>
                                         <SelectContent>
-                                            {renderModelOptions().map((v, i) => {
-                                                return <SelectItem key={i} id={"voice-" + i} value={v}>{v}</SelectItem>
-                                            })}
+                                            {
+                                                AIProvider ?
+                                                    models.filter(model => model.Provider == AIProvider).map((m, i) => {
+                                                        return <SelectItem key={i} id={"model-" + i} value={m.ModelId}>{m.Name} ({m.Description})</SelectItem>
+                                                    })
+                                                    : <SelectItem value="placeholder">Select Provider</SelectItem>
+                                            }
                                         </SelectContent>
                                     </SelectContent>
                                 </Select>
@@ -743,10 +739,11 @@ function ScenarioForm() {
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {voiceProviders.map((p, i) => {
-                                            return <SelectItem key={i} value={p}>{p}</SelectItem>
+                                        {
+                                            voiceProviders.map((p, i) => {
+                                                return <SelectItem key={i} value={p}>{p}</SelectItem>
+                                            })
                                         }
-                                        )}
                                     </SelectContent>
                                 </Select>
 
@@ -771,9 +768,14 @@ function ScenarioForm() {
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            {voices.filter(voice => voice.Provider == voiceProvider).map((v, i) => {
-                                                return <SelectItem key={i} id={"voice-" + i} value={v.VoiceId}>{v.Name} ({v.Description})</SelectItem>
-                                            })}
+                                            {
+                                                voiceProvider ?
+                                                    voices.filter(voice => voice.Provider == voiceProvider).map((v, i) => {
+                                                        return <SelectItem key={i} id={"voice-" + i} value={v.VoiceId}>{v.Name} ({v.Description})</SelectItem>
+                                                    })
+                                                    : <SelectItem value="placeholder">Select Provider</SelectItem>
+
+                                            }
                                         </SelectContent>
                                     </Select>
 
@@ -825,7 +827,7 @@ function ScenarioForm() {
                                                     <FormControl>
                                                         <RadioGroupItem value={avatar} className="hidden" />
                                                     </FormControl>
-                                                    <div id="img-container" className={`rounded-full h-24 w-24 overflow-hidden bg-white dark:bg-stone-800 border-solid border-2 hover:border-qub-red ${selectedAvatar === avatar ? "border-qub-red dark:border-qub-darkred border-4" : "border-stone-500"}`} onClick={() => {setSelectedAvatar(avatar); form.setValue("Avatar", avatar)}}>
+                                                    <div id="img-container" className={`rounded-full h-24 w-24 overflow-hidden bg-white dark:bg-stone-800 border-solid border-2 hover:border-qub-red ${selectedAvatar === avatar ? "border-qub-red dark:border-qub-darkred border-4" : "border-stone-500"}`} onClick={() => { setSelectedAvatar(avatar); form.setValue("Avatar", avatar) }}>
                                                         <img src={`/img/avatar_${avatar}.png`} alt="Image" className="h-44 p-1 object-cover" />
                                                     </div>
                                                 </FormItem>
@@ -845,7 +847,7 @@ function ScenarioForm() {
                 </div>
 
             </form>
-        </Form>
+        </Form >
 
 
 

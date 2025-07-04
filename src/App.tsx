@@ -24,6 +24,8 @@ import AddUsersPage from "./pages/Users/AddUsersPage.tsx";
 import UsersPage from "./pages/Users/UsersPage.tsx";
 import UserFormPage from "./pages/Users/UserFormPage.tsx";
 import ProfilePage from "./pages/Profile/ProfilePage.tsx";
+import ModelPage from "./pages/Model/ModelPage.tsx";
+import ModelFormPage from "./pages/Model/ModelFormPage.tsx";
 
 
 function App() {
@@ -61,33 +63,37 @@ function AppWithRouting() {
 
               <Route path="voices" element={<VoicePage />} />
               <Route path="voices/add" element={<VoiceFormPage />} />
-              <Route path="voices/edit/:id" element={<VoiceFormPage />} />              
-              
-              <Route path="/users" element={<UsersPage/>}></Route>
-              <Route path="/users/add" element={<AddUsersPage/>}></Route>
-              <Route path="/users/edit/:id" element={<UserFormPage/>}></Route>
+              <Route path="voices/edit/:id" element={<VoiceFormPage />} />
+
+              <Route path="models" element={<ModelPage />} />
+              <Route path="models/add" element={<ModelFormPage />} />
+              <Route path="models/edit/:id" element={<ModelFormPage />} />
+
+              <Route path="/users" element={<UsersPage />}></Route>
+              <Route path="/users/add" element={<AddUsersPage />}></Route>
+              <Route path="/users/edit/:id" element={<UserFormPage />}></Route>
 
               <Route path="/issues" element={<IssuesPage />} />
             </Route>
 
-            
+
             <Route path="/login" element={<LoginPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/update-password" element={<UpdatePassword />} />
 
             <Route path='/unauthorized' element={<Unauthorized />} />
             <Route path='*' element={<ErrorPage />} />
-          </Route>       
+          </Route>
 
 
-          
-        
+
+
           {/* Embedded routes without Navbar/Footer */}
           <Route path="/embedded">
             <Route path="scenarios/:id" element={<ScenarioPage />} />
           </Route>
 
-    
+
         </Routes>
       </div>
       {!isEmbeddedRoute && <Footer />}
