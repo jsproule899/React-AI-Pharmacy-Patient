@@ -44,6 +44,7 @@ const otherPersonSchema = z.object({
 
 const formSchema = z.object({
     Theme: z.string().max(100).min(1, "Required"),
+    Anonymize: z.boolean().optional(),
     Visible: z.boolean().optional(),
     Context: z.string().max(250).min(1, "Required"),
     Name: z.string().max(50).min(1, "Required"),
@@ -121,6 +122,7 @@ function ScenarioForm() {
         resolver: zodResolver(formSchema),
         defaultValues: {
             Theme: "",
+            Anonymize: false,
             Visible: true,
             Context: "",
             Name: "",
@@ -277,6 +279,27 @@ function ScenarioForm() {
                                     <div className="space-y-1 leading-none ">
                                         <FormLabel>
                                             Visible?
+                                        </FormLabel>
+                                    </div>
+                                    <FormControl>
+                                        <Checkbox
+                                            checked={field.value ?? false}
+                                            onCheckedChange={(value) => { field.onChange(value); }}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                    <div className='flex items-center w-fit h-fit gap-4 rounded-md border bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 p-2.5 shadow'>
+                        <FormField
+                            control={form.control}
+                            name="Anonymize"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center space-x-3 space-y-0 ">
+                                    <div className="space-y-1 leading-none ">
+                                        <FormLabel>
+                                            Anonymize?
                                         </FormLabel>
                                     </div>
                                     <FormControl>

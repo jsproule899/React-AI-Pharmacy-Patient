@@ -99,9 +99,9 @@ export function TranscriptTable<TData, TValue>({
                 <div className="flex items-center justify-between py-4 gap-4">
                     <Input
                         placeholder="Filter by Student..."
-                        value={(table.getColumn("student_no")?.getFilterValue() as string) ?? ""}
+                        value={(table.getColumn("student")?.getFilterValue() as string) ?? ""}
                         onChange={(event) =>
-                            table.getColumn("student_no")?.setFilterValue(event.target.value)
+                            table.getColumn("student")?.setFilterValue(event.target.value)
                         }
                         className="max-w-sm"
                     />
@@ -149,7 +149,7 @@ export function TranscriptTable<TData, TValue>({
                                 <TableRow>
                                     <TableCell
                                         colSpan={columns.length}
-                                        className="h-24 text-center"
+                                        className="h-24 text-center text-stone-950 dark:text-stone-50"
                                     >
                                         No results.
                                     </TableCell>

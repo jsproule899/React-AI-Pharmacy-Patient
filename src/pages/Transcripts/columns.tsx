@@ -9,7 +9,7 @@ import { useTableContext } from "./Table"
 
 export const columns: ColumnDef<Transcript>[] = [
     {
-        accessorKey: "student_no",
+        accessorKey: "student",
         accessorFn: (transcript) => transcript.Student,
         header: ({ column }) => {
             return (
@@ -18,12 +18,12 @@ export const columns: ColumnDef<Transcript>[] = [
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                     className="px-2"
                 >
-                    Student No.
+                    Student
                     <FaArrowsUpDown />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="text-stone-950 dark:text-stone-50 px-2">{row.getValue("student_no")}</div>,
+        cell: ({ row }) => <div className="text-stone-950 dark:text-stone-50 px-2">{row.getValue("student")}</div>,
         enableSorting: true,
         enableHiding: false,
     },

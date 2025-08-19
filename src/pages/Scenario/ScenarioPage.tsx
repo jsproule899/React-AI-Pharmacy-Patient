@@ -27,12 +27,12 @@ function ScenarioPage() {
 
     });
 
-    const handleTranscriptUpload = useCallback((filename: string, data: string, studentNo: string) => {
+    const handleTranscriptUpload = useCallback((filename: string, data: string, studentNo: string, studentId: string) => {
         let paths = location.pathname.split("/");
         let scenarioId = paths[paths.length - 1];
         setIsUploading(true);
         try {
-            axiosPrivate.post('/api/transcript', { Filename: filename, Data: data, Scenario: scenarioId, Student: studentNo }).then(() => {
+            axiosPrivate.post('/api/transcript', { Filename: filename, Data: data, Scenario: scenarioId, Student: studentId, StudentNo: studentNo  }).then(() => {
                 setIsUploading(false);
             })
         } catch (error) {
