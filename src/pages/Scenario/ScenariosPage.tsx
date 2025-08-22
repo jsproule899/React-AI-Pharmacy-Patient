@@ -145,7 +145,7 @@ function ScenariosPage() {
         pageSize: 12,
     });
 
-    const themes = [...new Set(scenarios?.map((scenario) => scenario.Theme) || [])];
+    const themes = [...new Set(scenarios ? scenarios.map((scenario) => scenario.Theme) : [])];
 
 
     const onScenarioDeleted = (id: string) => {
