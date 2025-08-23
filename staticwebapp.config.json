@@ -1,4 +1,9 @@
 {
+  "mimeTypes": {
+    ".data.unityweb": "application/octet-stream",
+    ".wasm.unityweb": "application/wasm",
+    ".js": "application/javascript"
+  },
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": ["/images/*.{png,jpg,gif}", "/css/*", "/assets/*", "img/*","unity/*"]
