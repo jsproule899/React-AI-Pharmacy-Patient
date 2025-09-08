@@ -26,7 +26,10 @@ import { z } from "zod";
 
 const formSchema = z.object({
     StudentNo: z.string().max(100).min(1, "Required"),
-    Email: z.string().max(250).min(1, "Required"),
+    Email: z.string().email()
+        .max(250, { message: "Email must be no longer than 250 characters" })
+        .min(11, { message: "Email must be at least 11 characters." })
+        .endsWith("qub.ac.uk", { message: "Invalid QUB email, must end with qub.ac.uk " }),
     AcademicYear: z.string().max(50).min(1, "Required"),
     Roles: z.enum(["student", "staff", "admin"]).array().refine((value) => value.some((item) => item), {
         message: "You have to select at least one role.",
@@ -104,6 +107,8 @@ function UserForm() {
                     }
                 }).then((res) => {
                     if (res.status.toString().startsWith("20")) {
+                        queryClient.invalidateQueries(['users'] as any);
+                        navigate("/users"); // Navigate to the users list after successful submission
                         toast({
                             description: "User successfully added."
                         })
@@ -111,7 +116,7 @@ function UserForm() {
                 }).catch((err) => {
                     toast({
                         variant: "destructive",
-                        description: "Failed. " + err.response.data.message 
+                        description: "Failed. " + err.response.data.message
                     })
                 })
                 toast({
@@ -119,8 +124,6 @@ function UserForm() {
                 })
 
             }
-            queryClient.invalidateQueries(['users'] as any);
-            navigate("/users"); // Navigate to the users list after successful submission
 
         } catch (error) {
             console.error("Error saving User", error);
