@@ -637,7 +637,7 @@ function ScenarioForm() {
                             <FormItem>
                                 <FormLabel>Correct Outcome</FormLabel>
                                 <FormControl>
-                                    <RadioGroup defaultValue="Treat" onValueChange={field.onChange}
+                                    <RadioGroup defaultValue={field.value} onValueChange={field.onChange}
                                         className='flex flex-row'>
                                         <div className="flex items-center space-x-2">
                                             <RadioGroupItem value="Treat" id="Treat" />
