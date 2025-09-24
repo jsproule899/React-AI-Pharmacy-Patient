@@ -66,6 +66,7 @@ const formSchema = z.object({
     Emotion: z.string().optional(),
     AdditionalInfo: z.string().optional(),
     Outcome: z.string().min(1, "Required"),
+    Justification: z.string().min(1, "Required"),
     AI: z.string().min(1, "Required"),
     Model: z.string().min(1, "Required"),
     TTS: z.string().min(1, "Required"),
@@ -145,6 +146,7 @@ function ScenarioForm() {
             Emotion: "",
             AdditionalInfo: "",
             Outcome: "Treat",
+            Justification: "",
             Avatar: "female_01"
         },
     })
@@ -629,32 +631,45 @@ function ScenarioForm() {
                     )}
                 />
 
-                <div className='flex items-center w-fit h-fit rounded-md border bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 p-3 shadow'>
-                    <FormField
-                        control={form.control}
-                        name="Outcome"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Correct Outcome</FormLabel>
-                                <FormControl>
-                                    <RadioGroup defaultValue={field.value} onValueChange={field.onChange}
-                                        className='flex flex-row'>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="Treat" id="Treat" />
-                                            <Label htmlFor="Treat">Treat</Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="Refer" id="Refer" />
-                                            <Label htmlFor="Refer">Refer</Label>
-                                        </div>
-                                    </RadioGroup></FormControl>
 
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+                <FormField
+                    control={form.control}
+                    name="Outcome"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Correct Outcome</FormLabel>
+                            <FormControl>
+                                <RadioGroup defaultValue={field.value} onValueChange={field.onChange}
+                                    className='flex flex-row'>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="Treat" id="Treat" />
+                                        <Label htmlFor="Treat">Treat</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="Refer" id="Refer" />
+                                        <Label htmlFor="Refer">Refer</Label>
+                                    </div>
+                                </RadioGroup></FormControl>
 
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={form.control}
+                    name="Justification"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Outcome Information</FormLabel>
+                            <FormControl>
+                                <Textarea className="resize-y " placeholder="Overall justification for this outcome, including treatment and advice if applicable." {...field} />
+                            </FormControl>
+
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
 
                 <FormField
