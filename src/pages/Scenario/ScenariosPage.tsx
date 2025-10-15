@@ -142,7 +142,7 @@ function ScenariosPage() {
     const [pagination, setPagination] = useState({
         pageIndex: 0,
         totalPages: 1,
-        pageSize: 12,
+        pageSize: 10,
     });
 
     const themes = [...new Set(scenarios ? scenarios.map((scenario) => scenario.Theme) : [])];
@@ -322,7 +322,7 @@ function ScenariosPage() {
                         <SelectValue placeholder={pagination.pageSize} />
                     </SelectTrigger>
                     <SelectContent side="top">
-                        {[4, 12, 24, 48].map((pageSize) => (
+                        {[5, 10, 25, 50].map((pageSize) => (
                             <SelectItem key={pageSize} value={`${pageSize}`}>
                                 {pageSize}
                             </SelectItem>

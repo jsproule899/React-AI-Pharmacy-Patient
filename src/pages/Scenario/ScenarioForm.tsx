@@ -33,14 +33,40 @@ import { z } from "zod";
 
 const AVATARS = ["female_01", "female_02", "female_03", "female_04", "female_05", "female_06", "female_07", "male_01", "male_02", "male_03", "male_04", "male_05", "nonbinary_01", "nonbinary_02", "nonbinary_03"] as const;
 
+const ageSchema = z.object({
+    Years: z.string()
+        .nonempty("Required")
+        .refine((val) => !isNaN(Number(val)), {
+            message: "must be a number",
+        })
+        .refine((val) => Number(val) >= 0, {
+            message: "Minimum is 0",
+        })
+        .refine((val) => Number(val) <= 110, {
+            message: "Maximum is 110",
+        }),
+    Months: z.string()
+        .nonempty("Required")
+        .refine((val) => !isNaN(Number(val)), {
+            message: "Must be a number",
+        })
+        .refine((val) => Number(val) >= 0, {
+            message: "Minimum is 0",
+        })
+        .refine((val) => Number(val) <= 24, {
+            message: "Maximum is 24",
+        }),
+})
 
 const otherPersonSchema = z.object({
     Name: z.string().optional(),
-    Age: z.string().optional(),
+    Age: z.object({
+        Years: z.string().optional(),
+        Months: z.string().optional(),
+    }),
     Gender: z.string().optional(),
     Relationship: z.string().optional()
 });
-
 
 const formSchema = z.object({
     Theme: z.string().max(100).min(1, "Required"),
@@ -48,10 +74,7 @@ const formSchema = z.object({
     Visible: z.boolean().optional(),
     Context: z.string().max(250).min(1, "Required"),
     Name: z.string().max(50).min(1, "Required"),
-    Age: z.string({
-        required_error: "Age is required",
-        invalid_type_error: "Age must be a number between 1-110",
-    }).min(1, "Required"),
+    Age: ageSchema,
     Gender: z.string().min(1, "Required"),
     Self: z.boolean().optional(),
     Other_Person: otherPersonSchema,
@@ -77,7 +100,8 @@ const formSchema = z.object({
         if (!Self && Other_Person) {
             const fieldsToCheck = [
                 "Other_Person.Name",
-                "Other_Person.Age",
+                "Other_Person.Age.Years",
+                "Other_Person.Age.Months",
                 "Other_Person.Gender",
                 "Other_Person.Relationship"
 
@@ -127,11 +151,11 @@ function ScenarioForm() {
             Visible: true,
             Context: "",
             Name: "",
-            Age: "",
+            Age: { Years: "", Months: "" },
             Self: true,
             Other_Person: {
                 Name: "",
-                Age: "",
+                Age: { Years: "", Months: "" },
                 Gender: "",
                 Relationship: ""
             },
@@ -348,21 +372,38 @@ function ScenarioForm() {
                         )}
                     />
 
-                    <FormField
-                        control={form.control}
-                        name="Age"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Age</FormLabel>
-                                <FormControl>
-                                    <Input type="number" className='w-20 ' min="1" max="120" placeholder="18" {...field} />
-                                </FormControl>
+                    <FormItem>
+                        <FormLabel className="">Age (Years | Months)</FormLabel>
+                        <div className='flex flex-wrap gap-1'>
+                            <FormField
+                                control={form.control}
+                                name="Age.Years"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Input type="number" className='w-20 ' min="0" max="110" placeholder="18" {...field} />
+                                        </FormControl>
 
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
+                            <FormField
+                                control={form.control}
+                                name="Age.Months"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Input type="number" className='w-20 ' min="0" max="24" placeholder="0" {...field} />
+                                        </FormControl>
+
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    </FormItem>
                     <FormField
                         control={form.control}
                         name="Gender"
@@ -424,7 +465,7 @@ function ScenarioForm() {
                                     control={form.control}
                                     name='Other_Person.Name'
                                     render={({ field }) => (
-                                        <FormItem className='mr-2'>
+                                        <FormItem >
                                             <FormLabel >Name</FormLabel>
                                             <FormControl>
                                                 <Input className=" lg:w-96" placeholder="John Doe..." {...field} />
@@ -435,21 +476,38 @@ function ScenarioForm() {
                                     )}
                                 />
 
-                                <FormField
-                                    control={form.control}
-                                    name="Other_Person.Age"
-                                    render={({ field }) => (
-                                        <FormItem className='mr-2'>
-                                            <FormLabel>Age</FormLabel>
-                                            <FormControl>
-                                                <Input type="number" className='w-20 ' min="1" max="120" placeholder="18" {...field} />
-                                            </FormControl>
 
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <FormItem>
+                                    <FormLabel className="">Age (Years | Months)</FormLabel>
+                                    <div className='flex flex-wrap gap-1'>
+                                        <FormField
+                                            control={form.control}
+                                            name="Other_Person.Age.Years"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Input type="number" className='w-20 ' min="0" max="110" placeholder="18" {...field} />
+                                                    </FormControl>
 
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="Other_Person.Age.Months"
+                                            render={({ field }) => (
+                                                <FormItem >
+                                                    <FormControl>
+                                                        <Input type="number" className='w-20 ' min="0" max="24" placeholder="0" {...field} />
+                                                    </FormControl>
+
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </FormItem>
                                 <FormField
                                     control={form.control}
                                     name="Other_Person.Gender"

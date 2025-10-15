@@ -6,7 +6,7 @@ export interface Scenario {
   Name: string;
   Self: boolean;
   Other_Person: OtherPerson;
-  Age: string;
+  Age: {Years: String, Months: String}
   Gender: string;
   Medicines: string;
   AdditionalMeds: string;
@@ -29,7 +29,7 @@ export interface Scenario {
 
 export interface OtherPerson {
   Name: string;
-  Age: string;
+  Age: {Years: String, Months: String};
   Gender: string;
   Relationship: string;
 }
